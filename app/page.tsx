@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface Appointment {
@@ -18,7 +20,7 @@ interface Appointment {
   currency: string
   duration: number
   notes: string
-  status: "مؤكد" | "ملغي" | "مكتمل"
+  status: "مؤكد" | "ملغي" | "مكتمل" | "Confirmed" | "Cancelled" | "Completed"
   createdAt: string
 }
 
@@ -32,6 +34,28 @@ interface ToothData {
   priority?: "low" | "medium" | "high" | "urgent"
   hasIssue: boolean
   lastUpdated?: string
+}
+
+interface NematodeSpecies {
+  id: string
+  name: string
+  scientificName: string
+  classification: {
+    phylum: string
+    class: string
+    order: string
+    family: string
+  }
+  habitat: string
+  size: string
+  lifespan: string
+  diet: string
+  reproduction: string
+  ecologicalRole: string
+  plantImpact: string
+  controlMethods: string[]
+  image: string
+  description: string
 }
 
 export default function DentalClinicSystem() {
@@ -48,6 +72,140 @@ export default function DentalClinicSystem() {
   const [isArabic, setIsArabic] = useState(true)
   const [doctorName, setDoctorName] = useState("")
   const [notification, setNotification] = useState("")
+  const [selectedNematode, setSelectedNematode] = useState<NematodeSpecies | null>(null)
+  const [nematodeSearchTerm, setNematodeSearchTerm] = useState("")
+
+  // Nematode species data
+  const nematodeSpecies: NematodeSpecies[] = [
+    {
+      id: "1",
+      name: "Root-knot Nematode",
+      scientificName: "Meloidogyne incognita",
+      classification: {
+        phylum: "Nematoda",
+        class: "Chromadorea",
+        order: "Rhabditida",
+        family: "Meloidogynidae",
+      },
+      habitat: "Soil, plant roots",
+      size: "0.4-0.6 mm",
+      lifespan: "25-30 days",
+      diet: "Plant root cells",
+      reproduction: "Parthenogenetic",
+      ecologicalRole: "Plant parasite, soil ecosystem component",
+      plantImpact: "Causes root galls, stunted growth, reduced yield",
+      controlMethods: ["Crop rotation", "Resistant varieties", "Biological control", "Soil solarization"],
+      image: "/placeholder.svg?height=200&width=300&text=Root-knot+Nematode",
+      description:
+        "One of the most economically important plant-parasitic nematodes worldwide, causing significant damage to agricultural crops.",
+    },
+    {
+      id: "2",
+      name: "Pinewood Nematode",
+      scientificName: "Bursaphelenchus xylophilus",
+      classification: {
+        phylum: "Nematoda",
+        class: "Chromadorea",
+        order: "Aphelenchida",
+        family: "Aphelenchoididae",
+      },
+      habitat: "Pine trees, wood",
+      size: "0.6-1.0 mm",
+      lifespan: "30-40 days",
+      diet: "Fungal hyphae, plant cells",
+      reproduction: "Sexual reproduction",
+      ecologicalRole: "Forest pathogen, causes pine wilt disease",
+      plantImpact: "Causes pine wilt disease, tree mortality",
+      controlMethods: ["Vector control", "Quarantine measures", "Tree removal", "Chemical treatment"],
+      image: "/placeholder.svg?height=200&width=300&text=Pinewood+Nematode",
+      description:
+        "A devastating forest pathogen that causes pine wilt disease, leading to massive tree mortality in affected areas.",
+    },
+    {
+      id: "3",
+      name: "Soybean Cyst Nematode",
+      scientificName: "Heterodera glycines",
+      classification: {
+        phylum: "Nematoda",
+        class: "Chromadorea",
+        order: "Tylenchida",
+        family: "Heteroderidae",
+      },
+      habitat: "Agricultural soils, soybean roots",
+      size: "0.5-0.8 mm",
+      lifespan: "30-35 days",
+      diet: "Soybean root cells",
+      reproduction: "Sexual reproduction",
+      ecologicalRole: "Agricultural pest, soil inhabitant",
+      plantImpact: "Reduces soybean yield, causes chlorosis and stunting",
+      controlMethods: ["Resistant cultivars", "Crop rotation", "Nematicides", "Biological control"],
+      image: "/placeholder.svg?height=200&width=300&text=Soybean+Cyst+Nematode",
+      description:
+        "The most damaging pathogen of soybean in the United States, causing billions of dollars in yield losses annually.",
+    },
+    {
+      id: "4",
+      name: "Free-living Nematode",
+      scientificName: "Caenorhabditis elegans",
+      classification: {
+        phylum: "Nematoda",
+        class: "Chromadorea",
+        order: "Rhabditida",
+        family: "Rhabditidae",
+      },
+      habitat: "Soil, compost, rotting vegetation",
+      size: "1.0-1.5 mm",
+      lifespan: "2-3 weeks",
+      diet: "Bacteria, organic matter",
+      reproduction: "Hermaphroditic",
+      ecologicalRole: "Decomposer, model organism for research",
+      plantImpact: "Beneficial - helps decompose organic matter",
+      controlMethods: ["Not applicable - beneficial species"],
+      image: "/placeholder.svg?height=200&width=300&text=C.+elegans",
+      description:
+        "A model organism extensively used in biological research, particularly in genetics, developmental biology, and neuroscience.",
+    },
+  ]
+
+  // Translation function
+  const t = (arabicText: string, englishText: string) => {
+    return isArabic ? arabicText : englishText
+  }
+
+  // Status translation
+  const getStatusText = (status: string) => {
+    if (isArabic) {
+      switch (status) {
+        case "Confirmed":
+          return "مؤكد"
+        case "Cancelled":
+          return "ملغي"
+        case "Completed":
+          return "مكتمل"
+        default:
+          return status
+      }
+    } else {
+      switch (status) {
+        case "مؤكد":
+          return "Confirmed"
+        case "ملغي":
+          return "Cancelled"
+        case "مكتمل":
+          return "Completed"
+        default:
+          return status
+      }
+    }
+  }
+
+  // Filter nematodes based on search term
+  const filteredNematodes = nematodeSpecies.filter(
+    (nematode) =>
+      nematode.name.toLowerCase().includes(nematodeSearchTerm.toLowerCase()) ||
+      nematode.scientificName.toLowerCase().includes(nematodeSearchTerm.toLowerCase()) ||
+      nematode.habitat.toLowerCase().includes(nematodeSearchTerm.toLowerCase()),
+  )
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -81,8 +239,18 @@ export default function DentalClinicSystem() {
 
     if (savedLanguage === "en") {
       setIsArabic(false)
+      setStatusFilter("All")
     }
   }, [])
+
+  // Update status filter when language changes
+  useEffect(() => {
+    if (isArabic) {
+      setStatusFilter("الكل")
+    } else {
+      setStatusFilter("All")
+    }
+  }, [isArabic])
 
   // Save data to localStorage whenever state changes
   useEffect(() => {
@@ -109,12 +277,22 @@ export default function DentalClinicSystem() {
       filtered = filtered.filter((apt) => apt.name.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
-    if (statusFilter !== "الكل") {
-      filtered = filtered.filter((apt) => apt.status === statusFilter)
+    if (statusFilter !== t("الكل", "All")) {
+      const filterStatus = isArabic
+        ? statusFilter
+        : statusFilter === "Confirmed"
+          ? "مؤكد"
+          : statusFilter === "Cancelled"
+            ? "ملغي"
+            : statusFilter === "Completed"
+              ? "مكتمل"
+              : statusFilter
+
+      filtered = filtered.filter((apt) => apt.status === filterStatus || getStatusText(apt.status) === statusFilter)
     }
 
     setFilteredAppointments(filtered)
-  }, [appointments, searchTerm, statusFilter])
+  }, [appointments, searchTerm, statusFilter, isArabic])
 
   const showNotification = (message: string) => {
     setNotification(message)
@@ -122,21 +300,21 @@ export default function DentalClinicSystem() {
   }
 
   const handleLogin = () => {
-    setDoctorName("د. أحمد محمد")
+    setDoctorName(t("د. أحمد محمد", "Dr. Ahmed Mohammed"))
     setCurrentView("dashboard")
-    showNotification("تم تسجيل الدخول بنجاح")
+    showNotification(t("تم تسجيل الدخول بنجاح", "Login successful"))
   }
 
   const handleRegister = () => {
-    setDoctorName("د. أحمد محمد")
+    setDoctorName(t("د. أحمد محمد", "Dr. Ahmed Mohammed"))
     setCurrentView("dashboard")
-    showNotification("تم إنشاء الحساب بنجاح")
+    showNotification(t("تم إنشاء الحساب بنجاح", "Account created successfully"))
   }
 
   const handleLogout = () => {
     setCurrentView("login")
     setDoctorName("")
-    showNotification("تم تسجيل الخروج بنجاح")
+    showNotification(t("تم تسجيل الخروج بنجاح", "Logout successful"))
   }
 
   const handleAddAppointment = (formData: FormData) => {
@@ -151,7 +329,7 @@ export default function DentalClinicSystem() {
       currency: formData.get("currency") as string,
       duration: Number.parseInt(formData.get("duration") as string),
       notes: (formData.get("notes") as string) || "",
-      status: "مؤكد",
+      status: isArabic ? "مؤكد" : "Confirmed",
       createdAt: new Date().toISOString(),
     }
 
@@ -173,25 +351,41 @@ export default function DentalClinicSystem() {
       ),
     )
 
-    showNotification("تم حفظ الجلسة بنجاح")
+    showNotification(t("تم حفظ الجلسة بنجاح", "Session saved successfully"))
     setCurrentView("appointments")
   }
 
   const handleUpdateAppointmentStatus = (id: string, status: Appointment["status"]) => {
     setAppointments((prev) => prev.map((apt) => (apt.id === id ? { ...apt, status } : apt)))
-    showNotification(`تم تحديث حالة الجلسة إلى ${status}`)
+    showNotification(
+      t(`تم تحديث حالة الجلسة إلى ${getStatusText(status)}`, `Session status updated to ${getStatusText(status)}`),
+    )
   }
 
   const handleDeleteAppointment = (id: string) => {
-    if (confirm(isArabic ? "هل أنت متأكد من حذف هذه الجلسة؟" : "Are you sure you want to delete this session?")) {
+    if (confirm(t("هل أنت متأكد من حذف هذه الجلسة؟", "Are you sure you want to delete this session?"))) {
       setAppointments((prev) => prev.filter((apt) => apt.id !== id))
-      showNotification("تم حذف الجلسة بنجاح")
+      showNotification(t("تم حذف الجلسة بنجاح", "Session deleted successfully"))
     }
   }
 
   const handleExportCSV = () => {
+    const headers = isArabic
+      ? ["اسم المريض", "التاريخ", "رقم السن", "نوع الإصابة", "نوع الجلسة", "السعر", "العملة", "المدة", "الحالة"]
+      : [
+          "Patient Name",
+          "Date",
+          "Tooth Number",
+          "Issue Type",
+          "Session Type",
+          "Price",
+          "Currency",
+          "Duration",
+          "Status",
+        ]
+
     const csvContent = [
-      ["اسم المريض", "التاريخ", "رقم السن", "نوع الإصابة", "نوع الجلسة", "السعر", "العملة", "المدة", "الحالة"],
+      headers,
       ...filteredAppointments.map((apt) => [
         apt.name,
         apt.date,
@@ -201,7 +395,7 @@ export default function DentalClinicSystem() {
         apt.price.toString(),
         apt.currency,
         apt.duration.toString(),
-        apt.status,
+        getStatusText(apt.status),
       ]),
     ]
       .map((row) => row.join(","))
@@ -212,7 +406,7 @@ export default function DentalClinicSystem() {
     link.href = URL.createObjectURL(blob)
     link.download = "appointments.csv"
     link.click()
-    showNotification("تم تصدير البيانات بنجاح")
+    showNotification(t("تم تصدير البيانات بنجاح", "Data exported successfully"))
   }
 
   const handleToothClick = (tooth: ToothData) => {
@@ -233,15 +427,16 @@ export default function DentalClinicSystem() {
       ),
     )
     setSelectedTooth(null)
-    showNotification(`تم حفظ بيانات السن رقم ${toothNumber}`)
+    showNotification(t(`تم حفظ بيانات السن رقم ${toothNumber}`, `Tooth ${toothNumber} data saved`))
   }
 
   const handleDeleteToothData = (toothNumber: number) => {
     if (
       confirm(
-        isArabic
-          ? `هل أنت متأكد من حذف جميع بيانات السن رقم ${toothNumber}؟`
-          : `Are you sure you want to delete all data for tooth ${toothNumber}?`,
+        t(
+          `هل أنت متأكد من حذف جميع بيانات السن رقم ${toothNumber}؟`,
+          `Are you sure you want to delete all data for tooth ${toothNumber}?`,
+        ),
       )
     ) {
       setTeethData((prev) =>
@@ -256,17 +451,21 @@ export default function DentalClinicSystem() {
         ),
       )
       setSelectedTooth(null)
-      showNotification(`تم حذف بيانات السن رقم ${toothNumber}`)
+      showNotification(t(`تم حذف بيانات السن رقم ${toothNumber}`, `Tooth ${toothNumber} data deleted`))
     }
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    const normalizedStatus = getStatusText(status)
+    switch (normalizedStatus) {
       case "مؤكد":
+      case "Confirmed":
         return "status-confirmed"
       case "ملغي":
+      case "Cancelled":
         return "status-canceled"
       case "مكتمل":
+      case "Completed":
         return "status-completed"
       default:
         return "bg-gray-500"
@@ -303,33 +502,33 @@ export default function DentalClinicSystem() {
     const today = new Date().toISOString().split("T")[0]
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
 
-    const todayAppointments = appointments.filter((apt) => apt.date === today && apt.status === "مؤكد")
-    const tomorrowAppointments = appointments.filter((apt) => apt.date === tomorrow && apt.status === "مؤكد")
+    const todayAppointments = appointments.filter(
+      (apt) => apt.date === today && (apt.status === "مؤكد" || apt.status === "Confirmed"),
+    )
+    const tomorrowAppointments = appointments.filter(
+      (apt) => apt.date === tomorrow && (apt.status === "مؤكد" || apt.status === "Confirmed"),
+    )
 
     return { todayAppointments, tomorrowAppointments }
   }
 
   const generateReport = () => {
     const stats = updateDashboardStats()
-    const report = {
-      totalAppointments: appointments.length,
-      confirmedAppointments: appointments.filter((apt) => apt.status === "مؤكد").length,
-      completedAppointments: appointments.filter((apt) => apt.status === "مكتمل").length,
-      cancelledAppointments: appointments.filter((apt) => apt.status === "ملغي").length,
-      totalRevenue: appointments.reduce((sum, apt) => sum + apt.price, 0),
-      teethStats: stats,
-    }
+    const confirmedCount = appointments.filter((apt) => apt.status === "مؤكد" || apt.status === "Confirmed").length
+    const completedCount = appointments.filter((apt) => apt.status === "مكتمل" || apt.status === "Completed").length
+    const cancelledCount = appointments.filter((apt) => apt.status === "ملغي" || apt.status === "Cancelled").length
 
-    const reportContent = `
+    const reportContent = isArabic
+      ? `
 تقرير شامل للعيادة
 ==================
 
 إحصائيات الجلسات:
-- إجمالي الجلسات: ${report.totalAppointments}
-- الجلسات المؤكدة: ${report.confirmedAppointments}
-- الجلسات المكتملة: ${report.completedAppointments}
-- الجلسات الملغية: ${report.cancelledAppointments}
-- إجمالي الإيرادات: ${report.totalRevenue.toFixed(2)}
+- إجمالي الجلسات: ${appointments.length}
+- الجلسات المؤكدة: ${confirmedCount}
+- الجلسات المكتملة: ${completedCount}
+- الجلسات الملغية: ${cancelledCount}
+- إجمالي الإيرادات: ${appointments.reduce((sum, apt) => sum + apt.price, 0).toFixed(2)}
 
 إحصائيات الأسنان:
 - أسنان سليمة: ${stats.healthyTeeth}
@@ -338,13 +537,31 @@ export default function DentalClinicSystem() {
 
 تاريخ التقرير: ${new Date().toLocaleDateString("ar-SA")}
     `
+      : `
+Comprehensive Clinic Report
+===========================
+
+Session Statistics:
+- Total Sessions: ${appointments.length}
+- Confirmed Sessions: ${confirmedCount}
+- Completed Sessions: ${completedCount}
+- Cancelled Sessions: ${cancelledCount}
+- Total Revenue: ${appointments.reduce((sum, apt) => sum + apt.price, 0).toFixed(2)}
+
+Teeth Statistics:
+- Healthy Teeth: ${stats.healthyTeeth}
+- Treated Teeth: ${stats.treatedTeeth}
+- Problem Teeth: ${stats.problemTeeth}
+
+Report Date: ${new Date().toLocaleDateString("en-US")}
+    `
 
     const blob = new Blob([reportContent], { type: "text/plain;charset=utf-8;" })
     const link = document.createElement("a")
     link.href = URL.createObjectURL(blob)
     link.download = "clinic-report.txt"
     link.click()
-    showNotification("تم إنشاء التقرير بنجاح")
+    showNotification(t("تم إنشاء التقرير بنجاح", "Report generated successfully"))
   }
 
   const backupData = () => {
@@ -359,16 +576,12 @@ export default function DentalClinicSystem() {
     link.href = URL.createObjectURL(blob)
     link.download = "clinic-backup.json"
     link.click()
-    showNotification("تم إنشاء النسخة الاحتياطية بنجاح")
+    showNotification(t("تم إنشاء النسخة الاحتياطية بنجاح", "Backup created successfully"))
   }
 
   const resetAllTeeth = () => {
     if (
-      confirm(
-        isArabic
-          ? "هل أنت متأكد من إعادة تعيين جميع بيانات الأسنان؟"
-          : "Are you sure you want to reset all teeth data?",
-      )
+      confirm(t("هل أنت متأكد من إعادة تعيين جميع بيانات الأسنان؟", "Are you sure you want to reset all teeth data?"))
     ) {
       const resetTeeth: ToothData[] = []
       for (let i = 1; i <= 32; i++) {
@@ -379,7 +592,7 @@ export default function DentalClinicSystem() {
         })
       }
       setTeethData(resetTeeth)
-      showNotification("تم إعادة تعيين جميع بيانات الأسنان")
+      showNotification(t("تم إعادة تعيين جميع بيانات الأسنان", "All teeth data has been reset"))
     }
   }
 
@@ -388,8 +601,12 @@ export default function DentalClinicSystem() {
   }
 
   const exportTeethData = () => {
+    const headers = isArabic
+      ? ["رقم السن", "الحالة", "الإصابة", "العلاج", "الأولوية", "الملاحظات"]
+      : ["Tooth Number", "Status", "Issue", "Treatment", "Priority", "Notes"]
+
     const csvContent = [
-      ["رقم السن", "الحالة", "الإصابة", "العلاج", "الأولوية", "الملاحظات"],
+      headers,
       ...teethData
         .filter((tooth) => tooth.hasIssue)
         .map((tooth) => [
@@ -409,19 +626,19 @@ export default function DentalClinicSystem() {
     link.href = URL.createObjectURL(blob)
     link.download = "teeth-data.csv"
     link.click()
-    showNotification("تم تصدير بيانات الأسنان بنجاح")
+    showNotification(t("تم تصدير بيانات الأسنان بنجاح", "Teeth data exported successfully"))
   }
 
   const shareTeethChart = () => {
     if (navigator.share) {
       navigator.share({
-        title: "مخطط الأسنان",
-        text: "مخطط الأسنان من نظام إدارة العيادة",
+        title: t("مخطط الأسنان", "Teeth Chart"),
+        text: t("مخطط الأسنان من نظام إدارة العيادة", "Teeth chart from clinic management system"),
         url: window.location.href,
       })
     } else {
       navigator.clipboard.writeText(window.location.href)
-      showNotification("تم نسخ الرابط للحافظة")
+      showNotification(t("تم نسخ الرابط للحافظة", "Link copied to clipboard"))
     }
   }
 
@@ -450,19 +667,19 @@ export default function DentalClinicSystem() {
       <div className="teeth-stats">
         <div className="stat-item">
           <div className="stat-number">{stats.healthyTeeth}</div>
-          <div className="stat-label">{isArabic ? "أسنان سليمة" : "Healthy Teeth"}</div>
+          <div className="stat-label">{t("أسنان سليمة", "Healthy Teeth")}</div>
         </div>
         <div className="stat-item">
           <div className="stat-number">{stats.treatedTeeth}</div>
-          <div className="stat-label">{isArabic ? "أسنان معالجة" : "Treated Teeth"}</div>
+          <div className="stat-label">{t("أسنان معالجة", "Treated Teeth")}</div>
         </div>
         <div className="stat-item">
           <div className="stat-number">{cavityCount}</div>
-          <div className="stat-label">{isArabic ? "أسنان مصابة" : "Cavity Teeth"}</div>
+          <div className="stat-label">{t("أسنان مصابة", "Cavity Teeth")}</div>
         </div>
         <div className="stat-item">
           <div className="stat-number">{missingCount}</div>
-          <div className="stat-label">{isArabic ? "أسنان مفقودة" : "Missing Teeth"}</div>
+          <div className="stat-label">{t("أسنان مفقودة", "Missing Teeth")}</div>
         </div>
       </div>
     )
@@ -477,9 +694,7 @@ export default function DentalClinicSystem() {
           <div className="appointment-reminder">
             <i className="fa-solid fa-bell"></i>
             <span>
-              {isArabic
-                ? `لديك ${todayAppointments.length} جلسة اليوم`
-                : `You have ${todayAppointments.length} sessions today`}
+              {t(`لديك ${todayAppointments.length} جلسة اليوم`, `You have ${todayAppointments.length} sessions today`)}
             </span>
           </div>
         )}
@@ -487,9 +702,10 @@ export default function DentalClinicSystem() {
           <div className="appointment-reminder">
             <i className="fa-solid fa-calendar-day"></i>
             <span>
-              {isArabic
-                ? `لديك ${tomorrowAppointments.length} جلسة غداً`
-                : `You have ${tomorrowAppointments.length} sessions tomorrow`}
+              {t(
+                `لديك ${tomorrowAppointments.length} جلسة غداً`,
+                `You have ${tomorrowAppointments.length} sessions tomorrow`,
+              )}
             </span>
           </div>
         )}
@@ -500,17 +716,108 @@ export default function DentalClinicSystem() {
   const renderQuickActions = () => (
     <div className="quick-actions">
       <button className="quick-action-btn" onClick={() => setCurrentView("add-appointment")}>
-        <i className="fa-solid fa-plus"></i> {isArabic ? "جلسة جديدة" : "New Session"}
+        <i className="fa-solid fa-plus"></i> {t("جلسة جديدة", "New Session")}
       </button>
       <button className="quick-action-btn" onClick={() => setCurrentView("teeth-chart")}>
-        <i className="fa-solid fa-teeth"></i> {isArabic ? "مخطط الأسنان" : "Teeth Chart"}
+        <i className="fa-solid fa-teeth"></i> {t("مخطط الأسنان", "Teeth Chart")}
+      </button>
+      <button className="quick-action-btn" onClick={() => setCurrentView("nematodes")}>
+        <i className="fa-solid fa-microscope"></i> {t("الديدان الخيطية", "Nematodes")}
       </button>
       <button className="quick-action-btn" onClick={generateReport}>
-        <i className="fa-solid fa-chart-bar"></i> {isArabic ? "تقرير شامل" : "Full Report"}
+        <i className="fa-solid fa-chart-bar"></i> {t("تقرير شامل", "Full Report")}
       </button>
       <button className="quick-action-btn" onClick={backupData}>
-        <i className="fa-solid fa-download"></i> {isArabic ? "نسخ احتياطي" : "Backup"}
+        <i className="fa-solid fa-download"></i> {t("نسخ احتياطي", "Backup")}
       </button>
+    </div>
+  )
+
+  const renderNematodeCard = (nematode: NematodeSpecies) => (
+    <Card key={nematode.id} className="nematode-card cursor-pointer hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg">{nematode.name}</CardTitle>
+            <CardDescription className="italic">{nematode.scientificName}</CardDescription>
+          </div>
+          <Badge variant="secondary">{nematode.classification.family}</Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <img
+          src={nematode.image || "/placeholder.svg"}
+          alt={nematode.name}
+          className="w-full h-48 object-cover rounded-lg mb-4"
+        />
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{nematode.description}</p>
+        <div className="space-y-2 text-sm">
+          <div>
+            <strong>{t("الموطن:", "Habitat:")}</strong> {nematode.habitat}
+          </div>
+          <div>
+            <strong>{t("الحجم:", "Size:")}</strong> {nematode.size}
+          </div>
+          <div>
+            <strong>{t("التأثير على النباتات:", "Plant Impact:")}</strong> {nematode.plantImpact}
+          </div>
+        </div>
+        <Button
+          className="w-full mt-4 bg-transparent"
+          variant="outline"
+          onClick={() => {
+            setSelectedNematode(nematode)
+            setCurrentView("nematode-details")
+          }}
+        >
+          {t("عرض التفاصيل", "View Details")}
+        </Button>
+      </CardContent>
+    </Card>
+  )
+
+  const renderNematodeLifeCycle = () => (
+    <div className="life-cycle-diagram">
+      <h4 className="text-lg font-semibold mb-4 text-center">
+        {t("دورة حياة الديدان الخيطية", "Nematode Life Cycle")}
+      </h4>
+      <div className="cycle-stages">
+        <div className="stage">
+          <div className="stage-circle">1</div>
+          <h5>{t("البيضة", "Egg")}</h5>
+          <p>{t("المرحلة الأولى من التطور", "First stage of development")}</p>
+        </div>
+        <div className="stage-arrow">→</div>
+        <div className="stage">
+          <div className="stage-circle">2</div>
+          <h5>{t("اليرقة الأولى", "J1 Juvenile")}</h5>
+          <p>{t("الفقس داخل البيضة", "Hatching inside egg")}</p>
+        </div>
+        <div className="stage-arrow">→</div>
+        <div className="stage">
+          <div className="stage-circle">3</div>
+          <h5>{t("اليرقة الثانية", "J2 Juvenile")}</h5>
+          <p>{t("مرحلة العدوى", "Infective stage")}</p>
+        </div>
+        <div className="stage-arrow">→</div>
+        <div className="stage">
+          <div className="stage-circle">4</div>
+          <h5>{t("اليرقة الثالثة", "J3 Juvenile")}</h5>
+          <p>{t("النمو داخل العائل", "Growth inside host")}</p>
+        </div>
+        <div className="stage-arrow">→</div>
+        <div className="stage">
+          <div className="stage-circle">5</div>
+          <h5>{t("اليرقة الرابعة", "J4 Juvenile")}</h5>
+          <p>{t("مرحلة ما قبل البلوغ", "Pre-adult stage")}</p>
+        </div>
+        <div className="stage-arrow">→</div>
+        <div className="stage">
+          <div className="stage-circle">6</div>
+          <h5>{t("البالغ", "Adult")}</h5>
+          <p>{t("النضج الجنسي والتكاثر", "Sexual maturity and reproduction")}</p>
+        </div>
+      </div>
     </div>
   )
 
@@ -574,7 +881,7 @@ export default function DentalClinicSystem() {
         }
 
         .container {
-          max-width: 940px;
+          max-width: 1200px;
           margin: 36px auto;
           background: rgba(255,255,255,0.97);
           padding: 40px 40px 32px 40px;
@@ -602,6 +909,10 @@ export default function DentalClinicSystem() {
           opacity: 0.2;
           border-radius: 50%;
           pointer-events: none;
+        }
+
+        .dental-system.dark .container::before {
+          background: radial-gradient(circle, #3399ff 0%, #222 60%);
         }
 
         .dental-h2, .dental-h3, .dental-h4 {
@@ -1206,6 +1517,116 @@ export default function DentalClinicSystem() {
           outline: none;
         }
 
+        .nematode-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 20px;
+          margin-top: 20px;
+        }
+
+        .nematode-card {
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nematode-card:hover {
+          transform: translateY(-2px);
+        }
+
+        .life-cycle-diagram {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          padding: 30px;
+          border-radius: 20px;
+          margin: 30px 0;
+        }
+
+        .dental-system.dark .life-cycle-diagram {
+          background: linear-gradient(135deg, #22293a 0%, #282f3c 100%);
+        }
+
+        .cycle-stages {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          margin-top: 20px;
+        }
+
+        .stage {
+          text-align: center;
+          max-width: 120px;
+        }
+
+        .stage-circle {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #0066b2 0%, #00b4d8 100%);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 18px;
+          margin: 0 auto 10px;
+        }
+
+        .stage h5 {
+          font-size: 14px;
+          font-weight: 600;
+          margin: 10px 0 5px;
+          color: #0066b2;
+        }
+
+        .stage p {
+          font-size: 12px;
+          color: #666;
+          line-height: 1.3;
+        }
+
+        .stage-arrow {
+          font-size: 24px;
+          color: #0066b2;
+          font-weight: bold;
+        }
+
+        .classification-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+          background: white;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .dental-system.dark .classification-table {
+          background: #2d3748;
+        }
+
+        .classification-table th,
+        .classification-table td {
+          padding: 12px 16px;
+          text-align: left;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dental-system.dark .classification-table th,
+        .dental-system.dark .classification-table td {
+          border-bottom-color: #4a5568;
+        }
+
+        .classification-table th {
+          background: #f7fafc;
+          font-weight: 600;
+          color: #2d3748;
+        }
+
+        .dental-system.dark .classification-table th {
+          background: #4a5568;
+          color: #e2e8f0;
+        }
+
         .hidden {
           display: none !important;
         }
@@ -1242,12 +1663,22 @@ export default function DentalClinicSystem() {
           .legend-item {
             font-size: 12px;
           }
+          .nematode-grid {
+            grid-template-columns: 1fr;
+          }
+          .cycle-stages {
+            flex-direction: column;
+            gap: 10px;
+          }
+          .stage-arrow {
+            transform: rotate(90deg);
+          }
         }
       `}</style>
 
       {/* Header */}
       <header className="header">
-        {isArabic ? "نظام إدارة العيادة - تسجيل دخول الدكتور" : "Clinic Management System - Doctor Login"}
+        {t("نظام إدارة العيادة - تسجيل دخول الدكتور", "Clinic Management System - Doctor Login")}
         <div className="header-decor"></div>
       </header>
 
@@ -1255,7 +1686,7 @@ export default function DentalClinicSystem() {
       <button
         onClick={() => setIsDarkMode(!isDarkMode)}
         className={`mode-toggle ${isDarkMode ? "dark" : ""}`}
-        aria-label="تبديل الوضع"
+        aria-label={t("تبديل الوضع", "Toggle mode")}
       >
         {isDarkMode ? (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -1279,7 +1710,11 @@ export default function DentalClinicSystem() {
       </button>
 
       {/* Language Toggle */}
-      <button onClick={() => setIsArabic(!isArabic)} className="language-toggle" aria-label="تبديل اللغة">
+      <button
+        onClick={() => setIsArabic(!isArabic)}
+        className="language-toggle"
+        aria-label={t("تبديل اللغة", "Toggle language")}
+      >
         {isArabic ? "English" : "العربية"}
       </button>
 
@@ -1291,7 +1726,7 @@ export default function DentalClinicSystem() {
         {currentView === "login" && (
           <div>
             <h2 className="dental-h2">
-              <i className="fa-solid fa-user-doctor"></i> {isArabic ? "تسجيل دخول الدكتور" : "Doctor Login"}
+              <i className="fa-solid fa-user-doctor"></i> {t("تسجيل دخول الدكتور", "Doctor Login")}
             </h2>
 
             <form
@@ -1302,30 +1737,30 @@ export default function DentalClinicSystem() {
             >
               <div>
                 <label className="dental-label" htmlFor="loginEmail">
-                  <i className="fa-regular fa-envelope"></i> {isArabic ? "البريد الإلكتروني" : "Email"}
+                  <i className="fa-regular fa-envelope"></i> {t("البريد الإلكتروني", "Email")}
                 </label>
                 <input className="dental-input" id="loginEmail" type="email" placeholder="example@mail.com" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="loginPass">
-                  <i className="fa-solid fa-key"></i> {isArabic ? "كلمة المرور" : "Password"}
+                  <i className="fa-solid fa-key"></i> {t("كلمة المرور", "Password")}
                 </label>
                 <input className="dental-input" id="loginPass" type="password" placeholder="••••••••" required />
               </div>
 
               <button type="submit" className="dental-button">
-                <i className="fa-solid fa-sign-in-alt"></i> {isArabic ? "دخول" : "Login"}
+                <i className="fa-solid fa-sign-in-alt"></i> {t("دخول", "Login")}
               </button>
             </form>
 
             <p style={{ marginTop: "14px", fontSize: "14px", color: "#555" }}>
-              {isArabic ? "لا تملك حساب؟" : "Don't have an account?"}{" "}
+              {t("لا تملك حساب؟", "Don't have an account?")}{" "}
               <button
                 onClick={() => setCurrentView("register")}
                 style={{ background: "none", border: "none", color: "#0077cc", fontWeight: 700, cursor: "pointer" }}
               >
-                {isArabic ? "تسجيل جديد" : "Register"} <i className="fa-regular fa-user"></i>
+                {t("تسجيل جديد", "Register")} <i className="fa-regular fa-user"></i>
               </button>
             </p>
           </div>
@@ -1335,8 +1770,7 @@ export default function DentalClinicSystem() {
         {currentView === "register" && (
           <div>
             <h2 className="dental-h2">
-              <i className="fa-solid fa-user-plus"></i>{" "}
-              {isArabic ? "تسجيل حساب دكتور جديد" : "Create New Doctor Account"}
+              <i className="fa-solid fa-user-plus"></i> {t("تسجيل حساب دكتور جديد", "Create New Doctor Account")}
             </h2>
 
             <form
@@ -1347,20 +1781,20 @@ export default function DentalClinicSystem() {
             >
               <div>
                 <label className="dental-label" htmlFor="registerName">
-                  <i className="fa-solid fa-signature"></i> {isArabic ? "الاسم الكامل" : "Full Name"}
+                  <i className="fa-solid fa-signature"></i> {t("الاسم الكامل", "Full Name")}
                 </label>
                 <input
                   className="dental-input"
                   id="registerName"
                   type="text"
-                  placeholder={isArabic ? "الاسم الكامل" : "Full Name"}
+                  placeholder={t("الاسم الكامل", "Full Name")}
                   required
                 />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="registerEmail">
-                  <i className="fa-regular fa-envelope"></i> {isArabic ? "البريد الإلكتروني" : "Email"}
+                  <i className="fa-regular fa-envelope"></i> {t("البريد الإلكتروني", "Email")}
                 </label>
                 <input
                   className="dental-input"
@@ -1373,23 +1807,23 @@ export default function DentalClinicSystem() {
 
               <div>
                 <label className="dental-label" htmlFor="registerPass">
-                  <i className="fa-solid fa-key"></i> {isArabic ? "كلمة المرور" : "Password"}
+                  <i className="fa-solid fa-key"></i> {t("كلمة المرور", "Password")}
                 </label>
                 <input className="dental-input" id="registerPass" type="password" placeholder="••••••••" required />
               </div>
 
               <button type="submit" className="dental-button">
-                <i className="fa-solid fa-user-plus"></i> {isArabic ? "تسجيل حساب" : "Create Account"}
+                <i className="fa-solid fa-user-plus"></i> {t("تسجيل حساب", "Create Account")}
               </button>
             </form>
 
             <p style={{ marginTop: "14px", fontSize: "14px", color: "#555" }}>
-              {isArabic ? "لديك حساب؟" : "Have an account?"}{" "}
+              {t("لديك حساب؟", "Have an account?")}{" "}
               <button
                 onClick={() => setCurrentView("login")}
                 style={{ background: "none", border: "none", color: "#0077cc", fontWeight: 700, cursor: "pointer" }}
               >
-                {isArabic ? "تسجيل دخول" : "Login"} <i className="fa-solid fa-sign-in-alt"></i>
+                {t("تسجيل دخول", "Login")} <i className="fa-solid fa-sign-in-alt"></i>
               </button>
             </p>
           </div>
@@ -1399,7 +1833,7 @@ export default function DentalClinicSystem() {
         {currentView === "dashboard" && (
           <div>
             <h2 className="dental-h2">
-              <i className="fa-solid fa-chart-line"></i> {isArabic ? "لوحة تحكم الدكتور" : "Doctor Dashboard"}
+              <i className="fa-solid fa-chart-line"></i> {t("لوحة تحكم الدكتور", "Doctor Dashboard")}
             </h2>
 
             <button
@@ -1417,7 +1851,7 @@ export default function DentalClinicSystem() {
                 cursor: "pointer",
               }}
             >
-              <i className="fa-solid fa-sign-out-alt"></i> {isArabic ? "تسجيل خروج" : "Logout"}
+              <i className="fa-solid fa-sign-out-alt"></i> {t("تسجيل خروج", "Logout")}
             </button>
 
             {/* Dashboard Stats */}
@@ -1431,13 +1865,16 @@ export default function DentalClinicSystem() {
 
             <div className="nav">
               <button className="dental-button" onClick={() => setCurrentView("add-appointment")}>
-                <i className="fa-solid fa-plus"></i> {isArabic ? "إضافة جلسة جديدة" : "Add New Session"}
+                <i className="fa-solid fa-plus"></i> {t("إضافة جلسة جديدة", "Add New Session")}
               </button>
               <button className="dental-button" onClick={() => setCurrentView("appointments")}>
-                <i className="fa-solid fa-list"></i> {isArabic ? "عرض الجلسات" : "View Sessions"}
+                <i className="fa-solid fa-list"></i> {t("عرض الجلسات", "View Sessions")}
               </button>
               <button className="dental-button" onClick={() => setCurrentView("teeth-chart")}>
-                <i className="fa-solid fa-teeth"></i> {isArabic ? "مخطط الأسنان" : "Teeth Chart"}
+                <i className="fa-solid fa-teeth"></i> {t("مخطط الأسنان", "Teeth Chart")}
+              </button>
+              <button className="dental-button" onClick={() => setCurrentView("nematodes")}>
+                <i className="fa-solid fa-microscope"></i> {t("الديدان الخيطية", "Nematodes")}
               </button>
             </div>
           </div>
@@ -1447,8 +1884,7 @@ export default function DentalClinicSystem() {
         {currentView === "add-appointment" && (
           <div>
             <h3 className="dental-h3">
-              <i className="fa-solid fa-notes-medical"></i>{" "}
-              {isArabic ? "تسجيل جلسة علاجية" : "Register Treatment Session"}
+              <i className="fa-solid fa-notes-medical"></i> {t("تسجيل جلسة علاجية", "Register Treatment Session")}
             </h3>
 
             <form
@@ -1460,25 +1896,25 @@ export default function DentalClinicSystem() {
             >
               <div>
                 <label className="dental-label" htmlFor="name">
-                  <i className="fa-solid fa-user"></i> {isArabic ? "اسم المريض" : "Patient Name"}
+                  <i className="fa-solid fa-user"></i> {t("اسم المريض", "Patient Name")}
                 </label>
                 <input className="dental-input" id="name" name="name" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="date">
-                  <i className="fa-solid fa-calendar-day"></i> {isArabic ? "تاريخ الجلسة" : "Session Date"}
+                  <i className="fa-solid fa-calendar-day"></i> {t("تاريخ الجلسة", "Session Date")}
                 </label>
                 <input className="dental-input" id="date" name="date" type="date" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="tooth">
-                  <i className="fa-solid fa-tooth"></i> {isArabic ? "رقم السن المصاب" : "Affected Tooth Number"}
+                  <i className="fa-solid fa-tooth"></i> {t("رقم السن المصاب", "Affected Tooth Number")}
                 </label>
                 <select className="dental-select" id="tooth" name="tooth" required>
                   <option value="" disabled>
-                    {isArabic ? "اختر رقم السن" : "Select tooth number"}
+                    {t("اختر رقم السن", "Select tooth number")}
                   </option>
                   {Array.from({ length: 32 }, (_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -1490,28 +1926,28 @@ export default function DentalClinicSystem() {
 
               <div>
                 <label className="dental-label" htmlFor="issue">
-                  <i className="fa-solid fa-exclamation-triangle"></i> {isArabic ? "نوع الإصابة" : "Issue Type"}
+                  <i className="fa-solid fa-exclamation-triangle"></i> {t("نوع الإصابة", "Issue Type")}
                 </label>
                 <input className="dental-input" id="issue" name="issue" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="sessionType">
-                  <i className="fa-solid fa-stethoscope"></i> {isArabic ? "نوع الجلسة" : "Session Type"}
+                  <i className="fa-solid fa-stethoscope"></i> {t("نوع الجلسة", "Session Type")}
                 </label>
                 <input className="dental-input" id="sessionType" name="sessionType" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="price">
-                  <i className="fa-solid fa-money-bill-wave"></i> {isArabic ? "سعر الجلسة" : "Session Price"}
+                  <i className="fa-solid fa-money-bill-wave"></i> {t("سعر الجلسة", "Session Price")}
                 </label>
                 <input className="dental-input" id="price" name="price" type="number" min="0" step="0.01" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="currency">
-                  <i className="fa-solid fa-coins"></i> {isArabic ? "العملة" : "Currency"}
+                  <i className="fa-solid fa-coins"></i> {t("العملة", "Currency")}
                 </label>
                 <select className="dental-select" id="currency" name="currency" required>
                   <option value="ILS">ILS</option>
@@ -1522,26 +1958,25 @@ export default function DentalClinicSystem() {
 
               <div>
                 <label className="dental-label" htmlFor="duration">
-                  <i className="fa-solid fa-clock"></i>{" "}
-                  {isArabic ? "مدة الجلسة (بالدقائق)" : "Session Duration (minutes)"}
+                  <i className="fa-solid fa-clock"></i> {t("مدة الجلسة (بالدقائق)", "Session Duration (minutes)")}
                 </label>
                 <input className="dental-input" id="duration" name="duration" type="number" min="5" required />
               </div>
 
               <div>
                 <label className="dental-label" htmlFor="notes">
-                  <i className="fa-solid fa-comment-dots"></i> {isArabic ? "ملاحظات إضافية" : "Additional Notes"}
+                  <i className="fa-solid fa-comment-dots"></i> {t("ملاحظات إضافية", "Additional Notes")}
                 </label>
                 <textarea className="dental-textarea" id="notes" name="notes" rows={3}></textarea>
               </div>
 
               <button type="submit" className="dental-button">
-                <i className="fa-solid fa-save"></i> {isArabic ? "حفظ الجلسة" : "Save Session"}
+                <i className="fa-solid fa-save"></i> {t("حفظ الجلسة", "Save Session")}
               </button>
             </form>
 
             <button onClick={() => setCurrentView("dashboard")} className="back-btn">
-              <i className="fa-solid fa-arrow-right"></i> {isArabic ? "عودة" : "Back"}
+              <i className="fa-solid fa-arrow-right"></i> {t("عودة", "Back")}
             </button>
           </div>
         )}
@@ -1550,13 +1985,13 @@ export default function DentalClinicSystem() {
         {currentView === "appointments" && (
           <div>
             <h3 className="dental-h3">
-              <i className="fa-solid fa-list-ul"></i> {isArabic ? "قائمة الجلسات" : "Sessions List"}
+              <i className="fa-solid fa-list-ul"></i> {t("قائمة الجلسات", "Sessions List")}
             </h3>
 
             <input
               type="text"
               className="search-input"
-              placeholder={isArabic ? "ابحث بالاسم..." : "Search by name..."}
+              placeholder={t("ابحث بالاسم...", "Search by name...")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -1565,28 +2000,30 @@ export default function DentalClinicSystem() {
               className="filter-status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              aria-label="فلترة الحالة"
+              aria-label={t("فلترة الحالة", "Filter status")}
             >
-              <option>{isArabic ? "الكل" : "All"}</option>
-              <option>{isArabic ? "مؤكد" : "Confirmed"}</option>
-              <option>{isArabic ? "ملغي" : "Cancelled"}</option>
-              <option>{isArabic ? "مكتمل" : "Completed"}</option>
+              <option>{t("الكل", "All")}</option>
+              <option>{t("مؤكد", "Confirmed")}</option>
+              <option>{t("ملغي", "Cancelled")}</option>
+              <option>{t("مكتمل", "Completed")}</option>
             </select>
 
-            <button onClick={handleExportCSV} className="export-btn" aria-label="تصدير الجلسات">
-              <i className="fa-solid fa-file-export"></i> {isArabic ? "تصدير CSV" : "Export CSV"}
+            <button onClick={handleExportCSV} className="export-btn" aria-label={t("تصدير الجلسات", "Export sessions")}>
+              <i className="fa-solid fa-file-export"></i> {t("تصدير CSV", "Export CSV")}
             </button>
 
             <div className="appointment-list">
               {filteredAppointments.map((appointment) => (
                 <div key={appointment.id} className="appointment">
                   <strong>{appointment.name}</strong>
-                  <span className={`status-label ${getStatusColor(appointment.status)}`}>{appointment.status}</span>
+                  <span className={`status-label ${getStatusColor(appointment.status)}`}>
+                    {getStatusText(appointment.status)}
+                  </span>
                   <p>
                     <i className="fa-solid fa-calendar"></i> {appointment.date}
                   </p>
                   <p>
-                    <i className="fa-solid fa-tooth"></i> {isArabic ? "السن رقم" : "Tooth"} {appointment.tooth}
+                    <i className="fa-solid fa-tooth"></i> {t("السن رقم", "Tooth")} {appointment.tooth}
                   </p>
                   <p>
                     <i className="fa-solid fa-exclamation-triangle"></i> {appointment.issue}
@@ -1598,7 +2035,7 @@ export default function DentalClinicSystem() {
                     <i className="fa-solid fa-money-bill-wave"></i> {appointment.price} {appointment.currency}
                   </p>
                   <p>
-                    <i className="fa-solid fa-clock"></i> {appointment.duration} {isArabic ? "دقيقة" : "minutes"}
+                    <i className="fa-solid fa-clock"></i> {appointment.duration} {t("دقيقة", "minutes")}
                   </p>
                   {appointment.notes && (
                     <p>
@@ -1614,16 +2051,16 @@ export default function DentalClinicSystem() {
                         setCurrentView("appointment-details")
                       }}
                     >
-                      <i className="fa-solid fa-eye"></i> {isArabic ? "عرض" : "View"}
+                      <i className="fa-solid fa-eye"></i> {t("عرض", "View")}
                     </button>
                     <button className="dental-button" onClick={() => setEditingAppointment(appointment)}>
-                      <i className="fa-solid fa-edit"></i> {isArabic ? "تعديل الحالة" : "Edit Status"}
+                      <i className="fa-solid fa-edit"></i> {t("تعديل الحالة", "Edit Status")}
                     </button>
                     <button
                       className="dental-button delete-btn"
                       onClick={() => handleDeleteAppointment(appointment.id)}
                     >
-                      <i className="fa-solid fa-trash"></i> {isArabic ? "حذف" : "Delete"}
+                      <i className="fa-solid fa-trash"></i> {t("حذف", "Delete")}
                     </button>
                   </div>
                 </div>
@@ -1631,7 +2068,7 @@ export default function DentalClinicSystem() {
             </div>
 
             <button onClick={() => setCurrentView("dashboard")} className="back-btn">
-              <i className="fa-solid fa-arrow-right"></i> {isArabic ? "عودة" : "Back"}
+              <i className="fa-solid fa-arrow-right"></i> {t("عودة", "Back")}
             </button>
           </div>
         )}
@@ -1640,11 +2077,11 @@ export default function DentalClinicSystem() {
         {currentView === "appointment-details" && selectedAppointment && (
           <div>
             <button onClick={() => setCurrentView("appointments")} className="back-btn">
-              <i className="fa-solid fa-arrow-right"></i> {isArabic ? "عودة لقائمة الجلسات" : "Back to Sessions"}
+              <i className="fa-solid fa-arrow-right"></i> {t("عودة لقائمة الجلسات", "Back to Sessions")}
             </button>
 
             <h3 className="dental-h3">
-              <i className="fa-solid fa-file-medical"></i> {isArabic ? "تفاصيل الجلسة" : "Session Details"}
+              <i className="fa-solid fa-file-medical"></i> {t("تفاصيل الجلسة", "Session Details")}
             </h3>
 
             <div style={{ lineHeight: "1.6", fontSize: "17px" }}>
@@ -1657,47 +2094,45 @@ export default function DentalClinicSystem() {
                 }}
               >
                 <h4>
-                  <i className="fa-solid fa-user"></i> {isArabic ? "معلومات المريض" : "Patient Information"}
+                  <i className="fa-solid fa-user"></i> {t("معلومات المريض", "Patient Information")}
                 </h4>
                 <p>
-                  <strong>{isArabic ? "الاسم:" : "Name:"}</strong> {selectedAppointment.name}
+                  <strong>{t("الاسم:", "Name:")}</strong> {selectedAppointment.name}
                 </p>
                 <p>
-                  <strong>{isArabic ? "التاريخ:" : "Date:"}</strong> {selectedAppointment.date}
+                  <strong>{t("التاريخ:", "Date:")}</strong> {selectedAppointment.date}
                 </p>
                 <p>
-                  <strong>{isArabic ? "رقم السن:" : "Tooth Number:"}</strong> {selectedAppointment.tooth}
+                  <strong>{t("رقم السن:", "Tooth Number:")}</strong> {selectedAppointment.tooth}
                 </p>
                 <p>
-                  <strong>{isArabic ? "نوع الإصابة:" : "Issue Type:"}</strong> {selectedAppointment.issue}
+                  <strong>{t("نوع الإصابة:", "Issue Type:")}</strong> {selectedAppointment.issue}
                 </p>
                 <p>
-                  <strong>{isArabic ? "نوع الجلسة:" : "Session Type:"}</strong> {selectedAppointment.sessionType}
+                  <strong>{t("نوع الجلسة:", "Session Type:")}</strong> {selectedAppointment.sessionType}
                 </p>
                 <p>
-                  <strong>{isArabic ? "السعر:" : "Price:"}</strong> {selectedAppointment.price}{" "}
-                  {selectedAppointment.currency}
+                  <strong>{t("السعر:", "Price:")}</strong> {selectedAppointment.price} {selectedAppointment.currency}
                 </p>
                 <p>
-                  <strong>{isArabic ? "المدة:" : "Duration:"}</strong> {selectedAppointment.duration}{" "}
-                  {isArabic ? "دقيقة" : "minutes"}
+                  <strong>{t("المدة:", "Duration:")}</strong> {selectedAppointment.duration} {t("دقيقة", "minutes")}
                 </p>
                 <p>
-                  <strong>{isArabic ? "الحالة:" : "Status:"}</strong>{" "}
+                  <strong>{t("الحالة:", "Status:")}</strong>{" "}
                   <span className={`status-label ${getStatusColor(selectedAppointment.status)}`}>
-                    {selectedAppointment.status}
+                    {getStatusText(selectedAppointment.status)}
                   </span>
                 </p>
                 {selectedAppointment.notes && (
                   <p>
-                    <strong>{isArabic ? "الملاحظات:" : "Notes:"}</strong> {selectedAppointment.notes}
+                    <strong>{t("الملاحظات:", "Notes:")}</strong> {selectedAppointment.notes}
                   </p>
                 )}
               </div>
             </div>
 
             <h4 style={{ marginTop: "25px", textAlign: "center" }}>
-              <i className="fa-solid fa-teeth"></i> {isArabic ? "مخطط الأسنان التفاعلي" : "Interactive Teeth Chart"}
+              <i className="fa-solid fa-teeth"></i> {t("مخطط الأسنان التفاعلي", "Interactive Teeth Chart")}
             </h4>
             {renderTeethChart()}
           </div>
@@ -1707,12 +2142,12 @@ export default function DentalClinicSystem() {
         {currentView === "teeth-chart" && (
           <div>
             <button onClick={() => setCurrentView("dashboard")} className="back-btn">
-              <i className="fa-solid fa-arrow-right"></i> {isArabic ? "عودة للوحة التحكم" : "Back to Dashboard"}
+              <i className="fa-solid fa-arrow-right"></i> {t("عودة للوحة التحكم", "Back to Dashboard")}
             </button>
 
             <h3 className="dental-h3" style={{ textAlign: "center" }}>
               <i className="fa-solid fa-teeth"></i>{" "}
-              {isArabic ? "مخطط الأسنان التفاعلي المتقدم" : "Advanced Interactive Teeth Chart"}
+              {t("مخطط الأسنان التفاعلي المتقدم", "Advanced Interactive Teeth Chart")}
             </h3>
 
             {/* Teeth Legend */}
@@ -1722,35 +2157,35 @@ export default function DentalClinicSystem() {
                   className="legend-color"
                   style={{ background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)", borderColor: "#b3d1f5" }}
                 ></div>
-                <span>{isArabic ? "سليم" : "Healthy"}</span>
+                <span>{t("سليم", "Healthy")}</span>
               </div>
               <div className="legend-item">
                 <div
                   className="legend-color"
                   style={{ background: "linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)", borderColor: "#28a745" }}
                 ></div>
-                <span>{isArabic ? "معالج" : "Treated"}</span>
+                <span>{t("معالج", "Treated")}</span>
               </div>
               <div className="legend-item">
                 <div
                   className="legend-color"
                   style={{ background: "linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)", borderColor: "#dc3545" }}
                 ></div>
-                <span>{isArabic ? "مصاب" : "Cavity"}</span>
+                <span>{t("مصاب", "Cavity")}</span>
               </div>
               <div className="legend-item">
                 <div
                   className="legend-color"
                   style={{ background: "linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)", borderColor: "#ffc107" }}
                 ></div>
-                <span>{isArabic ? "تحت العلاج" : "Under Treatment"}</span>
+                <span>{t("تحت العلاج", "Under Treatment")}</span>
               </div>
               <div className="legend-item">
                 <div
                   className="legend-color"
                   style={{ background: "linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%)", borderColor: "#6c757d" }}
                 ></div>
-                <span>{isArabic ? "مفقود" : "Missing"}</span>
+                <span>{t("مفقود", "Missing")}</span>
               </div>
             </div>
 
@@ -1763,17 +2198,207 @@ export default function DentalClinicSystem() {
             {/* Additional Tools */}
             <div className="quick-actions">
               <button className="quick-action-btn" onClick={resetAllTeeth}>
-                <i className="fa-solid fa-refresh"></i> {isArabic ? "إعادة تعيين الكل" : "Reset All"}
+                <i className="fa-solid fa-refresh"></i> {t("إعادة تعيين الكل", "Reset All")}
               </button>
               <button className="quick-action-btn" onClick={printTeethChart}>
-                <i className="fa-solid fa-print"></i> {isArabic ? "طباعة المخطط" : "Print Chart"}
+                <i className="fa-solid fa-print"></i> {t("طباعة المخطط", "Print Chart")}
               </button>
               <button className="quick-action-btn" onClick={exportTeethData}>
-                <i className="fa-solid fa-download"></i> {isArabic ? "تصدير البيانات" : "Export Data"}
+                <i className="fa-solid fa-download"></i> {t("تصدير البيانات", "Export Data")}
               </button>
               <button className="quick-action-btn" onClick={shareTeethChart}>
-                <i className="fa-solid fa-share"></i> {isArabic ? "مشاركة" : "Share"}
+                <i className="fa-solid fa-share"></i> {t("مشاركة", "Share")}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Nematodes Section */}
+        {currentView === "nematodes" && (
+          <div>
+            <button onClick={() => setCurrentView("dashboard")} className="back-btn">
+              <i className="fa-solid fa-arrow-right"></i> {t("عودة للوحة التحكم", "Back to Dashboard")}
+            </button>
+
+            <h3 className="dental-h3" style={{ textAlign: "center" }}>
+              <i className="fa-solid fa-microscope"></i> {t("دليل الديدان الخيطية", "Nematode Guide")}
+            </h3>
+
+            <p style={{ textAlign: "center", marginBottom: "30px", fontSize: "16px", color: "#666" }}>
+              {t(
+                "تعرف على أنواع الديدان الخيطية المختلفة وتأثيرها على النباتات والنظم البيئية",
+                "Learn about different types of nematodes and their impact on plants and ecosystems",
+              )}
+            </p>
+
+            {/* Search Bar */}
+            <input
+              type="text"
+              className="search-input"
+              placeholder={t("ابحث عن نوع الديدان الخيطية...", "Search for nematode species...")}
+              value={nematodeSearchTerm}
+              onChange={(e) => setNematodeSearchTerm(e.target.value)}
+              style={{ width: "100%", maxWidth: "500px", margin: "0 auto 30px", display: "block" }}
+            />
+
+            {/* Life Cycle Diagram */}
+            {renderNematodeLifeCycle()}
+
+            {/* Nematode Species Grid */}
+            <div className="nematode-grid">{filteredNematodes.map((nematode) => renderNematodeCard(nematode))}</div>
+
+            {filteredNematodes.length === 0 && (
+              <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                <i className="fa-solid fa-search" style={{ fontSize: "48px", marginBottom: "20px" }}></i>
+                <p>{t("لم يتم العثور على نتائج", "No results found")}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Nematode Details View */}
+        {currentView === "nematode-details" && selectedNematode && (
+          <div>
+            <button onClick={() => setCurrentView("nematodes")} className="back-btn">
+              <i className="fa-solid fa-arrow-right"></i> {t("عودة لقائمة الديدان الخيطية", "Back to Nematodes")}
+            </button>
+
+            <h3 className="dental-h3" style={{ textAlign: "center" }}>
+              <i className="fa-solid fa-microscope"></i> {selectedNematode.name}
+            </h3>
+
+            <div style={{ textAlign: "center", marginBottom: "30px" }}>
+              <p style={{ fontSize: "18px", fontStyle: "italic", color: "#666" }}>{selectedNematode.scientificName}</p>
+              <Badge variant="secondary" style={{ fontSize: "14px", padding: "8px 16px" }}>
+                {selectedNematode.classification.family}
+              </Badge>
+            </div>
+
+            <img
+              src={selectedNematode.image || "/placeholder.svg"}
+              alt={selectedNematode.name}
+              style={{
+                width: "100%",
+                maxWidth: "600px",
+                height: "300px",
+                objectFit: "cover",
+                borderRadius: "16px",
+                margin: "0 auto 30px",
+                display: "block",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+              }}
+            />
+
+            <div style={{ fontSize: "16px", lineHeight: "1.8" }}>
+              <p style={{ marginBottom: "20px", fontSize: "18px" }}>{selectedNematode.description}</p>
+
+              {/* Classification Table */}
+              <h4 className="dental-h4">{t("التصنيف العلمي", "Scientific Classification")}</h4>
+              <table className="classification-table">
+                <tbody>
+                  <tr>
+                    <th>{t("الشعبة", "Phylum")}</th>
+                    <td>{selectedNematode.classification.phylum}</td>
+                  </tr>
+                  <tr>
+                    <th>{t("الطائفة", "Class")}</th>
+                    <td>{selectedNematode.classification.class}</td>
+                  </tr>
+                  <tr>
+                    <th>{t("الرتبة", "Order")}</th>
+                    <td>{selectedNematode.classification.order}</td>
+                  </tr>
+                  <tr>
+                    <th>{t("العائلة", "Family")}</th>
+                    <td>{selectedNematode.classification.family}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* Detailed Information */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                  gap: "20px",
+                  margin: "30px 0",
+                }}
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      <i className="fa-solid fa-home"></i> {t("معلومات الموطن", "Habitat Information")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <strong>{t("الموطن:", "Habitat:")}</strong> {selectedNematode.habitat}
+                      </div>
+                      <div>
+                        <strong>{t("الحجم:", "Size:")}</strong> {selectedNematode.size}
+                      </div>
+                      <div>
+                        <strong>{t("العمر:", "Lifespan:")}</strong> {selectedNematode.lifespan}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      <i className="fa-solid fa-utensils"></i> {t("معلومات التغذية", "Feeding Information")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <strong>{t("النظام الغذائي:", "Diet:")}</strong> {selectedNematode.diet}
+                      </div>
+                      <div>
+                        <strong>{t("التكاثر:", "Reproduction:")}</strong> {selectedNematode.reproduction}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card style={{ margin: "20px 0" }}>
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    <i className="fa-solid fa-leaf"></i> {t("التأثير البيئي", "Ecological Impact")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div>
+                      <strong>{t("الدور البيئي:", "Ecological Role:")}</strong> {selectedNematode.ecologicalRole}
+                    </div>
+                    <div>
+                      <strong>{t("التأثير على النباتات:", "Plant Impact:")}</strong> {selectedNematode.plantImpact}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card style={{ margin: "20px 0" }}>
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    <i className="fa-solid fa-shield-alt"></i> {t("طرق المكافحة", "Control Methods")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {selectedNematode.controlMethods.map((method, index) => (
+                      <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <i className="fa-solid fa-check-circle" style={{ color: "#28a745" }}></i>
+                        <span>{method}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}
@@ -1784,63 +2409,63 @@ export default function DentalClinicSystem() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {isArabic ? `تعديل حالة السن رقم ${selectedTooth?.number}` : `Edit Tooth ${selectedTooth?.number} Status`}
+              {t(`تعديل حالة السن رقم ${selectedTooth?.number}`, `Edit Tooth ${selectedTooth?.number} Status`)}
             </DialogTitle>
           </DialogHeader>
 
           {selectedTooth && (
             <div className="space-y-4">
               <div>
-                <Label htmlFor="toothStatus">{isArabic ? "حالة السن" : "Tooth Status"}</Label>
+                <Label htmlFor="toothStatus">{t("حالة السن", "Tooth Status")}</Label>
                 <select id="toothStatus" className="dental-select" defaultValue={selectedTooth.status}>
-                  <option value="healthy">{isArabic ? "سليم" : "Healthy"}</option>
-                  <option value="treated">{isArabic ? "معالج" : "Treated"}</option>
-                  <option value="cavity">{isArabic ? "مصاب" : "Cavity"}</option>
-                  <option value="under-treatment">{isArabic ? "تحت العلاج" : "Under Treatment"}</option>
-                  <option value="missing">{isArabic ? "مفقود" : "Missing"}</option>
+                  <option value="healthy">{t("سليم", "Healthy")}</option>
+                  <option value="treated">{t("معالج", "Treated")}</option>
+                  <option value="cavity">{t("مصاب", "Cavity")}</option>
+                  <option value="under-treatment">{t("تحت العلاج", "Under Treatment")}</option>
+                  <option value="missing">{t("مفقود", "Missing")}</option>
                 </select>
               </div>
 
               <div>
-                <Label htmlFor="toothColor">{isArabic ? "لون مخصص (اختياري)" : "Custom Color (Optional)"}</Label>
+                <Label htmlFor="toothColor">{t("لون مخصص (اختياري)", "Custom Color (Optional)")}</Label>
                 <Input id="toothColor" type="color" defaultValue={selectedTooth.color || "#ffffff"} />
               </div>
 
               <div>
-                <Label htmlFor="toothIssue">{isArabic ? "نوع الإصابة" : "Issue Type"}</Label>
+                <Label htmlFor="toothIssue">{t("نوع الإصابة", "Issue Type")}</Label>
                 <Input
                   id="toothIssue"
                   defaultValue={selectedTooth.issue || ""}
-                  placeholder={isArabic ? "مثلاً: تسوس، كسر، التهاب اللثة" : "e.g: cavity, fracture, gingivitis"}
+                  placeholder={t("مثلاً: تسوس، كسر، التهاب اللثة", "e.g: cavity, fracture, gingivitis")}
                 />
               </div>
 
               <div>
-                <Label htmlFor="toothTreatment">{isArabic ? "العلاج المطلوب" : "Required Treatment"}</Label>
+                <Label htmlFor="toothTreatment">{t("العلاج المطلوب", "Required Treatment")}</Label>
                 <Input
                   id="toothTreatment"
                   defaultValue={selectedTooth.treatment || ""}
-                  placeholder={isArabic ? "مثلاً: حشو، تنظيف، قلع" : "e.g: filling, cleaning, extraction"}
+                  placeholder={t("مثلاً: حشو، تنظيف، قلع", "e.g: filling, cleaning, extraction")}
                 />
               </div>
 
               <div>
-                <Label htmlFor="toothNotes">{isArabic ? "ملاحظات إضافية" : "Additional Notes"}</Label>
+                <Label htmlFor="toothNotes">{t("ملاحظات إضافية", "Additional Notes")}</Label>
                 <Textarea
                   id="toothNotes"
                   defaultValue={selectedTooth.notes || ""}
                   rows={3}
-                  placeholder={isArabic ? "ملاحظات خاصة بهذا السن" : "Special notes for this tooth"}
+                  placeholder={t("ملاحظات خاصة بهذا السن", "Special notes for this tooth")}
                 />
               </div>
 
               <div>
-                <Label htmlFor="toothPriority">{isArabic ? "أولوية العلاج" : "Treatment Priority"}</Label>
+                <Label htmlFor="toothPriority">{t("أولوية العلاج", "Treatment Priority")}</Label>
                 <select id="toothPriority" className="dental-select" defaultValue={selectedTooth.priority || "low"}>
-                  <option value="low">{isArabic ? "منخفضة" : "Low"}</option>
-                  <option value="medium">{isArabic ? "متوسطة" : "Medium"}</option>
-                  <option value="high">{isArabic ? "عالية" : "High"}</option>
-                  <option value="urgent">{isArabic ? "عاجلة" : "Urgent"}</option>
+                  <option value="low">{t("منخفضة", "Low")}</option>
+                  <option value="medium">{t("متوسطة", "Medium")}</option>
+                  <option value="high">{t("عالية", "High")}</option>
+                  <option value="urgent">{t("عاجلة", "Urgent")}</option>
                 </select>
               </div>
 
@@ -1867,7 +2492,7 @@ export default function DentalClinicSystem() {
                   }}
                   className="flex-1"
                 >
-                  <i className="fa-solid fa-save"></i> {isArabic ? "حفظ" : "Save"}
+                  <i className="fa-solid fa-save"></i> {t("حفظ", "Save")}
                 </Button>
 
                 <Button
@@ -1875,11 +2500,11 @@ export default function DentalClinicSystem() {
                   variant="destructive"
                   className="flex-1"
                 >
-                  <i className="fa-solid fa-trash"></i> {isArabic ? "حذف البيانات" : "Delete Data"}
+                  <i className="fa-solid fa-trash"></i> {t("حذف البيانات", "Delete Data")}
                 </Button>
 
                 <Button onClick={() => setSelectedTooth(null)} variant="outline" className="flex-1">
-                  {isArabic ? "إلغاء" : "Cancel"}
+                  {t("إلغاء", "Cancel")}
                 </Button>
               </div>
             </div>
@@ -1891,48 +2516,48 @@ export default function DentalClinicSystem() {
       <Dialog open={!!editingAppointment} onOpenChange={() => setEditingAppointment(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{isArabic ? "تحديث حالة الجلسة" : "Update Session Status"}</DialogTitle>
+            <DialogTitle>{t("تحديث حالة الجلسة", "Update Session Status")}</DialogTitle>
           </DialogHeader>
 
           {editingAppointment && (
             <div className="space-y-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {isArabic ? "المريض:" : "Patient:"} <strong>{editingAppointment.name}</strong>
+                {t("المريض:", "Patient:")} <strong>{editingAppointment.name}</strong>
               </p>
 
               <div className="flex gap-2">
                 <Button
                   onClick={() => {
-                    handleUpdateAppointmentStatus(editingAppointment.id, "مؤكد")
+                    handleUpdateAppointmentStatus(editingAppointment.id, isArabic ? "مؤكد" : "Confirmed")
                     setEditingAppointment(null)
                   }}
                   className="flex-1 bg-green-600 hover:bg-green-700"
-                  disabled={editingAppointment.status === "مؤكد"}
+                  disabled={editingAppointment.status === "مؤكد" || editingAppointment.status === "Confirmed"}
                 >
-                  <i className="fa-solid fa-check-circle"></i> {isArabic ? "مؤكد" : "Confirmed"}
+                  <i className="fa-solid fa-check-circle"></i> {t("مؤكد", "Confirmed")}
                 </Button>
 
                 <Button
                   onClick={() => {
-                    handleUpdateAppointmentStatus(editingAppointment.id, "مكتمل")
+                    handleUpdateAppointmentStatus(editingAppointment.id, isArabic ? "مكتمل" : "Completed")
                     setEditingAppointment(null)
                   }}
                   className="flex-1 bg-orange-600 hover:bg-orange-700"
-                  disabled={editingAppointment.status === "مكتمل"}
+                  disabled={editingAppointment.status === "مكتمل" || editingAppointment.status === "Completed"}
                 >
-                  <i className="fa-solid fa-award"></i> {isArabic ? "مكتمل" : "Completed"}
+                  <i className="fa-solid fa-award"></i> {t("مكتمل", "Completed")}
                 </Button>
 
                 <Button
                   onClick={() => {
-                    handleUpdateAppointmentStatus(editingAppointment.id, "ملغي")
+                    handleUpdateAppointmentStatus(editingAppointment.id, isArabic ? "ملغي" : "Cancelled")
                     setEditingAppointment(null)
                   }}
                   variant="destructive"
                   className="flex-1"
-                  disabled={editingAppointment.status === "ملغي"}
+                  disabled={editingAppointment.status === "ملغي" || editingAppointment.status === "Cancelled"}
                 >
-                  <i className="fa-solid fa-times-circle"></i> {isArabic ? "ملغي" : "Cancelled"}
+                  <i className="fa-solid fa-times-circle"></i> {t("ملغي", "Cancelled")}
                 </Button>
               </div>
             </div>
