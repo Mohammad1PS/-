@@ -3031,5 +3031,4 @@ Report Date: ${new Date().toLocaleDateString("en-US")}
               <option>{t("مكتمل", "Completed")}</option>
             </select>
 
-            <button onClick={handleExportCSV} className="export-btn" aria-label={t("تصدير الجلسات", "Export sessions")}>
-              <i className="fa-solid fa-file-export"></i> {t("تص\
+            <button onClick={handleExportCSV} className="export-btn" aria-label={t("تصد\
