@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>نظام عيادة - تسجيل الدخول ولوحة التحكم</title>
+  <!-- Google Tajawal Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    /* خطوط وألوان متقدمة */
+    body {
+      font-family: 'Tajawal', sans-serif;
+      margin: 0; padding: 0;
+      background: linear-gradient(120deg, #dbeafe 0%, #f0f4ff 60%, #fff 100%);
+      color: #222;
+      direction: rtl;
+      transition: background 0.4s, color 0.4s;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #0066b2 60%, #00b4d8 100%);
+      color: white;
+      padding: 32px 0 24px 0;
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      box-shadow: 0 2px 22px rgba(0,0,0,0.14);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      position: relative;
+    }
+    .header-decor {
+      position: absolute;
+      bottom: -34px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 68px;
+      background: linear-gradient(90deg, #00b4d8 0%, #48cae4 100%);
+      opacity: 0.18;
+      border-radius: 0 0 80px 80px;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      max-width: 940px;
+      margin: 36px auto;
+      background: rgba(255,255,255,0.97);
+      padding: 40px 40px 32px 40px;
+      border-radius: 28px;
+      box-shadow: 0 8px 46px 0 rgba(0, 119, 204, 0.13);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+    .container::before {
+      content: "";
+      position: absolute;
+      top: -70px; right: -70px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, #00b4d8 0%, #fff0 60%);
+      opacity: 0.2;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    h2, h3, h4 {
+      font-weight: 700;
+      color: #0066b2;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 2;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-top: 0;
+      margin-bottom: 30px;
+      letter-spacing: 0.5px;
+    }
+    h3 {
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+    h4 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 15px;
+      color: #0066b2;
+      letter-spacing: 0.2px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 18px;
+      margin-top: 7px;
+      border: 1.5px solid #b3d1f5;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 500;
+      color: #333;
+      box-sizing: border-box;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      background: #f9fbff;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 8px #00b4d8;
+    }
+    .input-icon {
+      position: relative;
+    }
+    .input-icon i {
+      position: absolute;
+      left: 14px;
+      top: 45%;
+      transform: translateY(-50%);
+      color: #00b4d8;
+      font-size: 1.1em;
+      pointer-events: none;
+      opacity: 0.76;
+    }
+    button {
+      margin-top: 36px;
+      width: 100%;
+      background: linear-gradient(90deg, #00b4d8 0%, #0066b2 100%);
+      color: white;
+      padding: 16px 0;
+      border: none;
+      border-radius: 18px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 18px rgba(0, 180, 216, 0.18);
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+    button:active {
+      background: linear-gradient(90deg, #0066b2 0%, #00b4d8 100%);
+    }
+    button:hover {
+      background: linear-gradient(90deg, #0096c7 0%, #023e8a 100%);
+      box-shadow: 0 6px 20px rgba(2, 62, 138, 0.16);
+    }
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 32px 0 18px 0;
+      flex-wrap: wrap;
+      z-index: 2;
+    }
+    .nav button {
+      width: auto;
+      padding: 14px 36px;
+      font-size: 1rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 180, 216, 0.18);
+      margin: 0;
+    }
+    .nav button i {
+      margin-left: 5px;
+      margin-right: 0;
+    }
+    .hidden {
+      display: none !important;
+    }
+    /* Cards للجلسات */
+    .appointment-list {
+      margin-top: 27px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 20px;
+    }
+    .appointment {
+      background: linear-gradient(104deg, #e8f0fe 0%, #f1f8ff 100%);
+      padding: 20px 24px;
+      border-radius: 18px;
+      border: 1.5px solid #b3d1f5;
+      box-shadow: 0 4px 24px rgba(0,180,216,0.09);
+      position: relative;
+      transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .appointment:hover {
+      background: linear-gradient(104deg, #d1eaff 0%, #eaf8ff 100%);
+      box-shadow: 0 10px 32px rgba(0, 180, 216, 0.16);
+      border-color: #00b4d8;
+    }
+    .appointment strong {
+      color: #0077cc;
+      font-size: 1.1em;
+      font-weight: 700;
+    }
+    .appointment .status-label {
+      margin-right: 6px;
+      margin-left: 6px;
+      font-size: 15px;
+      padding: 4px 18px;
+      border-radius: 16px;
+      font-weight: 700;
+      color: white;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      letter-spacing: 0.5px;
+    }
+    .status-confirmed { background: linear-gradient(90deg,#43ea6b 60%,#28a745 100%);}
+    .status-canceled { background: linear-gradient(90deg,#ff6161 60%,#dc3545 100%);}
+    .status-completed { background: linear-gradient(90deg,#fdc96e 60%,#fd7e14 100%);}
+    .appointment .btns {
+      margin-top: 15px; display: flex; gap: 9px; flex-wrap: wrap;
+    }
+    .appointment button {
+      width: auto; min-width: 90px;
+      margin: 0;
+      padding: 8px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      transition: background 0.3s;
+    }
+    .appointment button i {
+      margin-left: 4px;
+    }
+    .appointment button:hover {
+      background: linear-gradient(90deg,#023e8a,#00b4d8);
+      color: white;
+    }
+    .appointment button.delete-btn {
+      background: linear-gradient(90deg,#ff6161 60%,#dc3545 100%);
+      color: white;
+      font-weight: 700;
+    }
+    .appointment button.delete-btn:hover {
+      background: linear-gradient(90deg,#dc3545,#ff6161);
+    }
+    .notification {
+      display: none;
+      position: fixed;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg,#0066b2 60%,#00b4d8 100%);
+      color: #fff;
+      padding: 20px 38px;
+      border-radius: 32px;
+      z-index: 1000;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 0 30px rgba(0,0,0,0.28);
+      user-select: none;
+      letter-spacing: 0.8px;
+      animation: fade-in 0.6s;
+    }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(-25px) translateX(-50%);}
+      to { opacity: 1; transform: translateY(0) translateX(-50%);}
+    }
+    /* زر العودة */
+    .back-btn {
+      margin-top: 26px;
+      background: linear-gradient(90deg, #555 70%, #777 100%);
+      color: white;
+      padding: 13px 34px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      width: auto;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.11);
+      transition: background 0.3s;
+    }
+    .back-btn:hover {
+      background: linear-gradient(90deg, #333 70%, #555 100%);
+    }
+    /* زر صغير */
+    .btn-small {
+      font-size: 13px;
+      padding: 6px 12px;
+      margin-top: 12px;
+      border-radius: 12px;
+    }
+    /* Modal متقدم */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 3000; 
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background: rgba(0,0,0,0.55); 
+      justify-content: center;
+      align-items: center;
+      animation: modal-fade-in 0.35s;
+    }
+    @keyframes modal-fade-in {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+    .modal-content {
+      background: linear-gradient(120deg,#fff 60%, #eaf5fa 100%);
+      padding: 36px 36px 24px 36px;
+      border-radius: 26px;
+      width: 390px;
+      max-width: 95%;
+      box-sizing: border-box;
+      box-shadow: 0 12px 32px rgba(0,180,216,0.12);
+      font-size: 15px;
+      position: relative;
+    }
+    .modal-content label {
+      font-weight: 600;
+      margin-top: 16px;
+      display: block;
+      color: #0066b2;
+    }
+    .modal-content input, .modal-content select, .modal-content textarea {
+      margin-top: 9px;
+      width: 100%;
+      padding: 12px 14px;
+      box-sizing: border-box;
+      border-radius: 14px;
+      border: 1.5px solid #b3d1f5;
+      font-size: 15px;
+      font-weight: 500;
+      color: #333;
+      transition: border-color 0.3s;
+      background: #f9fbff;
+    }
+    .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 12px #00b4d8;
+    }
+    .modal-buttons {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+    .modal-content .close-x {
+      position: absolute;
+      top: 16px;
+      left: 18px;
+      font-size: 1.4em;
+      color: #00b4d8;
+      cursor: pointer;
+      opacity: 0.55;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+    .modal-content .close-x:hover {
+      opacity: 1;
+    }
+    /* فلترة الحالة */
+    #filterStatus {
+      margin-top: 14px;
+      width: 220px;
+      padding: 14px 18px;
+      font-size: 16px;
+      border-radius: 16px;
+      border: 1.8px solid #b3d1f5;
+      font-weight: 600;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+      background: #f9fbff;
+    }
+    #filterStatus:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 12px #00b4d8;
+      outline: none;
+    }
+    /* زر تصدير */
+    #exportBtn {
+      margin-top: 14px;
+      background: linear-gradient(90deg,#43ea6b 60%,#28a745 100%);
+      border: none;
+      padding: 14px 32px;
+      border-radius: 18px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.3s;
+      box-shadow: 0 5px 18px rgba(40, 167, 69, 0.18);
+      margin-right: 12px;
+    }
+    #exportBtn:hover {
+      background: linear-gradient(90deg,#1e7e34,#43ea6b);
+      box-shadow: 0 6px 22px rgba(30, 126, 52, 0.26);
+    }
+    /* مخطط الأسنان المحسن */
+    #teethChart {
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      max-width: 500px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f4f8fa 0%, #e8f4f8 100%);
+      border-radius: 22px;
+      box-shadow: 0 4px 20px rgba(0, 180, 216, 0.12);
+      user-select: none;
+    }
+    .tooth {
+      width: 45px;
+      height: 45px;
+      border: 2.5px solid #b3d1f5;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      color: #0066b2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .tooth:hover {
+      border-color: #00b4d8;
+      box-shadow: 0 4px 16px rgba(0, 180, 216, 0.25);
+      transform: translateY(-2px);
+    }
+    .tooth.healthy {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-color: #28a745;
+      color: #155724;
+    }
+    .tooth.cavity {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    .tooth.treated {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-color: #ffc107;
+      color: #856404;
+    }
+    .tooth.missing {
+      background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%);
+      border-color: #6c757d;
+      color: #495057;
+      opacity: 0.6;
+    }
+    .tooth[data-has-issue="true"]::after {
+      content: "⚠";
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      font-size: 16px;
+      color: #dc3545;
+      font-weight: 900;
+      text-shadow: 0 0 4px #fff;
+      background: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #dc3545;
+    }
+    /* أقسام الأسنان */
+    .teeth-section {
+      margin: 20px 0;
+      text-align: center;
+    }
+    .teeth-section h4 {
+      margin-bottom: 15px;
+      color: #0066b2;
+      font-size: 1.1rem;
+    }
+    .upper-jaw, .lower-jaw {
+      margin: 25px 0;
+    }
+    .jaw-label {
+      font-weight: 700;
+      color: #0066b2;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+    /* مفتاح الألوان */
+    .teeth-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid #ccc;
+    }
+    /* إحصائيات الأسنان */
+    .teeth-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 16px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0066b2;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    /* تحسينات إضافية */
+    .appointment-reminder {
+      background: linear-gradient(90deg, #17a2b8 0%, #138496 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin: 15px 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .quick-action-btn {
+      padding: 10px 20px;
+      background: linear-gradient(90deg, #6f42c1 0%, #5a32a3 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin: 0;
+      width: auto;
+    }
+    .quick-action-btn:hover {
+      background: linear-gradient(90deg, #5a32a3 0%, #6f42c1 100%);
+      transform: translateY(-2px);
+    }
+    /* وضع الظلام */
+    body.dark {
+      background: linear-gradient(120deg, #192230 0%, #313b49 100%);
+      color: #f1f1f1;
+    }
+    body.dark .container {
+      background: linear-gradient(120deg,#22293a 60%, #282f3c 100%);
+      color: #eee;
+      box-shadow: 0 0 40px rgba(255,255,255,0.07);
+    }
+    body.dark header {
+      background: linear-gradient(90deg, #111a2d 60%, #1e2330 100%);
+      box-shadow: 0 4px 14px rgba(255,255,255,0.10);
+    }
+    body.dark .header-decor {
+      background: linear-gradient(90deg, #222d45 0%, #22293a 100%);
+    }
+    body.dark input, body.dark select, body.dark textarea {
+      background: #22293a;
+      border-color: #444;
+      color: #eee;
+    }
+    body.dark input:focus, body.dark select:focus, body.dark textarea:focus {
+      border-color: #3399ff;
+      box-shadow: 0 0 12px #3399ff;
+      outline: none;
+    }
+    body.dark button, body.dark .nav button, body.dark #exportBtn {
+      box-shadow: 0 4px 12px rgba(51,153,255,0.14);
+      background: linear-gradient(90deg, #1e2330 0%, #222d45 100%);
+      color: #ffd43b;
+    }
+    body.dark button:hover, body.dark .nav button:hover, body.dark #exportBtn:hover {
+      background: linear-gradient(90deg, #222d45 0%, #1a6fde 100%);
+      box-shadow: 0 6px 18px rgba(26,111,222,0.22);
+      color: #fff;
+    }
+    body.dark .appointment {
+      background: linear-gradient(104deg, #22293a 0%, #282f3c 100%);
+      border-color: #444;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+      color: #eee;
+    }
+    body.dark .appointment:hover {
+      background: linear-gradient(104deg, #282f3c 0%, #222d45 100%);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    }
+    body.dark .status-label.status-confirmed { background: linear-gradient(90deg,#56c257 60%,#43ea6b 100%);}
+    body.dark .status-label.status-canceled { background: linear-gradient(90deg,#ff6161 60%,#dc3545 100%);}
+    body.dark .status-label.status-completed { background: linear-gradient(90deg,#ffa236 60%,#fdc96e 100%);}
+    body.dark .notification {
+      background: linear-gradient(90deg,#222d45 60%,#22293a 100%);
+      color: #aad4ff;
+      box-shadow: 0 0 30px rgba(170,212,255,0.15);
+    }
+    body.dark .modal-content {
+      background: linear-gradient(120deg,#22293a 60%, #282f3c 100%);
+      color: #eee;
+      box-shadow: 0 8px 28px rgba(100,100,150,0.14);
+    }
+    body.dark .modal-content input, 
+    body.dark .modal-content select, 
+    body.dark .modal-content textarea {
+      background: #282f3c;
+      border-color: #444;
+      color: #eee;
+    }
+    body.dark .back-btn {
+      background: linear-gradient(90deg, #444 70%, #666 100%);
+      box-shadow: 0 3px 8px rgba(255,255,255,0.09);
+    }
+    body.dark .back-btn:hover {
+      background: linear-gradient(90deg, #666 70%, #444 100%);
+    }
+    body.dark #teethChart {
+      background: linear-gradient(135deg, #22293a 0%, #282f3c 100%);
+    }
+    body.dark .tooth {
+      background: #2d3748;
+      color: #e2e8f0;
+      border-color: #4a5568;
+    }
+    body.dark .teeth-stats {
+      background: linear-gradient(135deg, #22293a 0%, #282f3c 100%);
+    }
+    body.dark .stat-item {
+      background: #2d3748;
+      color: #e2e8f0;
+    }
+    /* أيقونة تبديل الوضع */
+    #modeToggle {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(120deg,#ffd43b 60%, #fffbe8 100%);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 3px 12px rgba(255, 212, 59, 0.18);
+      transition: background 0.4s, box-shadow 0.4s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: #333;
+      user-select: none;
+      z-index: 1500;
+      outline: none;
+    }
+    #modeToggle.dark {
+      background: linear-gradient(120deg,#222d45 60%, #22293a 100%);
+      box-shadow: 0 3px 12px rgba(255, 255, 255, 0.22);
+      color: #ffd43b;
+    }
+    #modeToggle svg {
+      pointer-events: none;
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      transition: opacity 0.2s;
+    }
+    /* زر تغيير اللغة */
+    #languageToggle {
+      position: fixed;
+      bottom: 22px;
+      right: 24px;
+      padding: 13px 22px;
+      background: linear-gradient(90deg, #00b4d8 60%, #0066b2 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 119, 204, 0.08);
+      transition: background 0.3s;
+      z-index: 1500;
+      user-select: none;
+      outline: none;
+    }
+    #languageToggle:hover {
+      background: linear-gradient(90deg, #0066b2 60%, #00b4d8 100%);
+    }
+    /* Responsive */
+    @media (max-width: 700px) {
+      .container {
+        margin: 20px 9px;
+        padding: 25px 10px;
+      }
+      .nav {
+        gap: 12px;
+      }
+      .appointment-list {
+        grid-template-columns: 1fr;
+      }
+      .appointment button {
+        font-size: 13px;
+        padding: 7px 10px;
+      }
+      button, #exportBtn, #languageToggle {
+        font-size: 15px;
+      }
+      #teethChart {
+        max-width: 100%;
+        gap: 6px;
+        grid-template-columns: repeat(8, 1fr);
+      }
+      .tooth {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+      }
+      header {
+        font-size: 1.2rem;
+        padding: 18px 0;
+      }
+      .teeth-legend {
+        gap: 10px;
+      }
+      .legend-item {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body lang="ar">
+
+  <header id="headerText">
+    نظام إدارة العيادة - تسجيل دخول الدكتور
+    <div class="header-decor"></div>
+  </header>
+
+  <!-- إشعارات -->
+  <div class="notification" id="notification"></div>
+
+  <!-- مفتاح تبديل الوضع -->
+  <button id="modeToggle" aria-label="تبديل الوضع">
+    <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" >
+      <circle cx="12" cy="12" r="5" fill="currentColor"/>
+      <g stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="1" x2="12" y2="4"/>
+        <line x1="12" y1="20" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/>
+        <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="4" y2="12"/>
+        <line x1="20" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/>
+        <line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/>
+      </g>
+    </svg>
+    <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;">
+      <path fill="currentColor" d="M21 12.79A9 9 0 0112.21 3a7 7 0 009.52 9.52z"/>
+    </svg>
+  </button>
+
+  <!-- زر تغيير اللغة -->
+  <button id="languageToggle" aria-label="تبديل اللغة">English</button>
+
+  <div class="container" id="doctorAuthSection">
+    <h2><i class="fa-solid fa-user-doctor"></i> تسجيل دخول الدكتور</h2>
+    <div class="input-icon">
+      <label for="loginEmail"><i class="fa-regular fa-envelope"></i> البريد الإلكتروني</label>
+      <input type="email" id="loginEmail" placeholder="example@mail.com" />
+    </div>
+    <div class="input-icon">
+      <label for="loginPass"><i class="fa-solid fa-key"></i> كلمة المرور</label>
+      <input type="password" id="loginPass" placeholder="••••••••" />
+    </div>
+    <button id="loginBtn"><i class="fa-solid fa-sign-in-alt"></i> دخول</button>
+    <p style="margin-top: 14px; font-size: 14px; color:#555;">
+      لا تملك حساب؟ 
+      <button id="showRegister" style="background:none; border:none; color:#0077cc; font-weight: 700; cursor:pointer;">تسجيل جديد <i class="fa-regular fa-user"></i></button>
+    </p>
+  </div>
+
+  <div class="container hidden" id="doctorRegisterDiv">
+    <h2><i class="fa-solid fa-user-plus"></i> تسجيل حساب دكتور جديد</h2>
+    <div class="input-icon">
+      <label for="registerName"><i class="fa-solid fa-signature"></i> الاسم الكامل</label>
+      <input type="text" id="registerName" placeholder="الاسم الكامل" />
+    </div>
+    <div class="input-icon">
+      <label for="registerEmail"><i class="fa-regular fa-envelope"></i> البريد الإلكتروني</label>
+      <input type="email" id="registerEmail" placeholder="example@mail.com" />
+    </div>
+    <div class="input-icon">
+      <label for="registerPass"><i class="fa-solid fa-key"></i> كلمة المرور</label>
+      <input type="password" id="registerPass" placeholder="••••••••" />
+    </div>
+    <button id="registerBtn"><i class="fa-solid fa-user-plus"></i> تسجيل حساب</button>
+    <p style="margin-top: 14px; font-size: 14px; color:#555;">
+      لديك حساب؟ 
+      <button id="showLogin" style="background:none; border:none; color:#0077cc; font-weight: 700; cursor:pointer;">تسجيل دخول <i class="fa-solid fa-sign-in-alt"></i></button>
+    </p>
+  </div>
+
+  <div class="container hidden" id="doctorDashboardDiv">
+    <h2 id="dashboardTitle"><i class="fa-solid fa-chart-line"></i> لوحة تحكم الدكتور</h2>
+    <button id="logoutBtn" style="background: linear-gradient(90deg,#ff6161,#dc3545); width:auto; padding: 12px 28px; margin-bottom: 18px; border-radius: 14px; box-shadow: 0 4px 12px rgba(220, 53, 69, 0.14);"><i class="fa-solid fa-sign-out-alt"></i> تسجيل خروج</button>
+
+    <!-- إحصائيات سريعة -->
+    <div class="teeth-stats">
+      <div class="stat-item">
+        <div class="stat-number" id="totalAppointments">0</div>
+        <div class="stat-label">إجمالي الجلسات</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="healthyTeeth">32</div>
+        <div class="stat-label">أسنان سليمة</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="treatedTeeth">0</div>
+        <div class="stat-label">أسنان معالجة</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="problemTeeth">0</div>
+        <div class="stat-label">أسنان مصابة</div>
+      </div>
+    </div>
+
+    <!-- تذكيرات المواعيد -->
+    <div id="appointmentReminders"></div>
+
+    <!-- إجراءات سريعة -->
+    <div class="quick-actions">
+      <button class="quick-action-btn" onclick="openAppointmentForm()">
+        <i class="fa-solid fa-plus"></i> جلسة جديدة
+      </button>
+      <button class="quick-action-btn" onclick="openTeethChart()">
+        <i class="fa-solid fa-teeth"></i> مخطط الأسنان
+      </button>
+      <button class="quick-action-btn" onclick="generateReport()">
+        <i class="fa-solid fa-chart-bar"></i> تقرير شامل
+      </button>
+      <button class="quick-action-btn" onclick="backupData()">
+        <i class="fa-solid fa-download"></i> نسخ احتياطي
+      </button>
+    </div>
+
+    <div class="nav">
+      <button id="openAppointmentFormBtn"><i class="fa-solid fa-plus"></i> إضافة جلسة جديدة</button>
+      <button id="openAppointmentsListBtn"><i class="fa-solid fa-list"></i> عرض الجلسات</button>
+      <button id="openTeethChartBtn"><i class="fa-solid fa-teeth"></i> مخطط الأسنان</button>
+    </div>
+
+    <div id="appointmentFormSection" class="hidden">
+      <h3><i class="fa-solid fa-notes-medical"></i> تسجيل جلسة علاجية</h3>
+      <form id="appointmentForm">
+        <input type="hidden" id="editId" value="" />
+        <div class="input-icon"><label for="name"><i class="fa-solid fa-user"></i> اسم المريض</label><input type="text" id="name" name="name" required /></div>
+        <div class="input-icon"><label for="date"><i class="fa-solid fa-calendar-day"></i> تاريخ الجلسة</label><input type="date" id="date" name="date" required /></div>
+        <div class="input-icon">
+          <label for="tooth"><i class="fa-solid fa-tooth"></i> رقم السن المصاب</label>
+          <select id="tooth" name="tooth" required>
+            <option value="" disabled selected>اختر رقم السن</option>
+            <script>for(let i=1;i<=32;i++){document.write(`<option value="${i}">${i}</option>`);}</script>
+          </select>
+        </div>
+        <div class="input-icon"><label for="issue"><i class="fa-solid fa-exclamation-triangle"></i> نوع الإصابة</label><input type="text" id="issue" name="issue" required /></div>
+        <div class="input-icon"><label for="sessionType"><i class="fa-solid fa-stethoscope"></i> نوع الجلسة</label><input type="text" id="sessionType" name="sessionType" required /></div>
+        <div class="input-icon"><label for="price"><i class="fa-solid fa-money-bill-wave"></i> سعر الجلسة</label><input type="number" id="price" name="price" min="0" step="0.01" required /></div>
+        <div class="input-icon">
+          <label for="currencySelect"><i class="fa-solid fa-coins"></i> العملة</label>
+          <select id="currencySelect" name="currencySelect" required>
+            <option value="ILS">ILS</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+        <div class="input-icon"><label for="duration"><i class="fa-solid fa-clock"></i> مدة الجلسة (بالدقائق)</label><input type="number" id="duration" name="duration" min="5" required /></div>
+        <div class="input-icon"><label for="needs"><i class="fa-solid fa-comment-dots"></i> ملاحظات إضافية</label><textarea id="needs" name="needs" rows="3"></textarea></div>
+        <button type="submit"><i class="fa-solid fa-save"></i> حفظ الجلسة</button>
+      </form>
+    </div>
+
+    <div id="appointmentPage" class="hidden">
+      <h3><i class="fa-solid fa-list-ul"></i> قائمة الجلسات</h3>
+      <input type="text" id="searchInput" placeholder="ابحث بالاسم..." style="padding:10px; width: 300px; border-radius: 14px; border: 1.5px solid #b3d1f5; margin-bottom: 12px; font-size: 16px;" />
+      <select id="filterStatus" aria-label="فلترة الحالة">
+        <option>الكل</option>
+        <option>مؤكد</option>
+        <option>ملغي</option>
+        <option>مكتمل</option>
+      </select>
+      <button id="exportBtn" aria-label="تصدير الجلسات"><i class="fa-solid fa-file-export"></i> تصدير CSV</button>
+      <div class="appointment-list" id="appointmentsList"></div>
+    </div>
+
+    <div id="detailsPage" class="hidden">
+      <button class="back-btn" id="backToAppointmentsBtn"><i class="fa-solid fa-arrow-right"></i> عودة لقائمة الجلسات</button>
+      <h3><i class="fa-solid fa-file-medical"></i> تفاصيل الجلسة</h3>
+      <div id="appointmentDetails" style="line-height: 1.6; font-size: 17px;"></div>
+      <h4 style="margin-top: 25px; text-align:center;"><i class="fa-solid fa-teeth"></i> مخطط الأسنان التفاعلي</h4>
+      <div id="teethChart"></div>
+    </div>
+
+    <!-- صفحة مخطط الأسنان المحسن -->
+    <div id="teethChartPage" class="hidden">
+      <button class="back-btn" onclick="showDashboard()"><i class="fa-solid fa-arrow-right"></i> عودة للوحة التحكم</button>
+      <h3 style="text-align: center;"><i class="fa-solid fa-teeth"></i> مخطط الأسنان التفاعلي المتقدم</h3>
+      
+      <!-- مفتاح الألوان -->
+      <div class="teeth-legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-color: #b3d1f5;"></div>
+          <span>سليم</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-color: #28a745;"></div>
+          <span>معالج</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); border-color: #dc3545;"></div>
+          <span>مصاب</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-color: #ffc107;"></div>
+          <span>تحت العلاج</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%); border-color: #6c757d;"></div>
+          <span>مفقود</span>
+        </div>
+      </div>
+
+      <!-- الفك العلوي -->
+      <div class="teeth-section">
+        <div class="upper-jaw">
+          <div class="jaw-label">الفك العلوي</div>
+          <div id="upperTeethChart"></div>
+        </div>
+      </div>
+
+      <!-- الفك السفلي -->
+      <div class="teeth-section">
+        <div class="lower-jaw">
+          <div class="jaw-label">الفك السفلي</div>
+          <div id="lowerTeethChart"></div>
+        </div>
+      </div>
+
+      <!-- إحصائيات الأسنان -->
+      <div class="teeth-stats">
+        <div class="stat-item">
+          <div class="stat-number" id="healthyCount">32</div>
+          <div class="stat-label">أسنان سليمة</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="treatedCount">0</div>
+          <div class="stat-label">أسنان معالجة</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="cavityCount">0</div>
+          <div class="stat-label">أسنان مصابة</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="missingCount">0</div>
+          <div class="stat-label">أسنان مفقودة</div>
+        </div>
+      </div>
+
+      <!-- أدوات إضافية -->
+      <div class="quick-actions">
+        <button class="quick-action-btn" onclick="resetAllTeeth()">
+          <i class="fa-solid fa-refresh"></i> إعادة تعيين الكل
+        </button>
+        <button class="quick-action-btn" onclick="printTeethChart()">
+          <i class="fa-solid fa-print"></i> طباعة المخطط
+        </button>
+        <button class="quick-action-btn" onclick="exportTeethData()">
+          <i class="fa-solid fa-download"></i> تصدير البيانات
+        </button>
+        <button class="quick-action-btn" onclick="shareTeethChart()">
+          <i class="fa-solid fa-share"></i> مشاركة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال تعديل حالة السن المحسن -->
+  <div class="modal" id="toothEditModal" role="dialog" aria-modal="true" aria-labelledby="toothNumberTitle">
+    <div class="modal-content">
+      <span class="close-x" onclick="closeToothEditModal()"><i class="fa-solid fa-xmark"></i></span>
+      <h4>تعديل حالة السن رقم <span id="toothNumberTitle"></span></h4>
+      
+      <label for="toothStatusSelect"><i class="fa-solid fa-list"></i> حالة السن</label>
+      <select id="toothStatusSelect">
+        <option value="healthy">سليم</option>
+        <option value="treated">معالج</option>
+        <option value="cavity">مصاب</option>
+        <option value="under-treatment">تحت العلاج</option>
+        <option value="missing">مفقود</option>
+      </select>
+
+      <label for="toothColorInput"><i class="fa-solid fa-palette"></i> لون مخصص (اختياري)</label>
+      <input type="color" id="toothColorInput" />
+      
+      <label for="toothIssueInput"><i class="fa-solid fa-exclamation-triangle"></i> نوع الإصابة</label>
+      <input type="text" id="toothIssueInput" placeholder="مثلاً: تسوس، كسر، التهاب اللثة" />
+      
+      <label for="toothTreatmentInput"><i class="fa-solid fa-stethoscope"></i> العلاج المطلوب</label>
+      <input type="text" id="toothTreatmentInput" placeholder="مثلاً: حشو، تنظيف، قلع" />
+      
+      <label for="toothNotesInput"><i class="fa-solid fa-comment-dots"></i> ملاحظات إضافية</label>
+      <textarea id="toothNotesInput" rows="3" placeholder="ملاحظات خاصة بهذا السن"></textarea>
+      
+      <label for="toothPrioritySelect"><i class="fa-solid fa-flag"></i> أولوية العلاج</label>
+      <select id="toothPrioritySelect">
+        <option value="low">منخفضة</option>
+        <option value="medium">متوسطة</option>
+        <option value="high">عالية</option>
+        <option value="urgent">عاجلة</option>
+      </select>
+
+      <div class="modal-buttons">
+        <button onclick="saveToothStatus()"><i class="fa-solid fa-save"></i> حفظ</button>
+        <button onclick="deleteToothData()" style="background:linear-gradient(90deg,#ff6161,#dc3545);color:white;"><i class="fa-solid fa-trash"></i> حذف البيانات</button>
+        <button onclick="closeToothEditModal()" style="background:linear-gradient(90deg,#6c757d,#495057);color:white;"><i class="fa-solid fa-times"></i> إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال تغيير حالة الجلسة -->
+  <div class="modal" id="statusModal" role="dialog" aria-modal="true" aria-labelledby="statusModalTitle">
+    <div class="modal-content">
+      <span class="close-x" onclick="closeStatusModal()"><i class="fa-solid fa-xmark"></i></span>
+      <h4 id="statusModalTitle">تغيير حالة الجلسة</h4>
+      <label for="newStatus"><i class="fa-solid fa-edit"></i> الحالة الجديدة</label>
+      <select id="newStatus">
+        <option value="مؤكد">مؤكد</option>
+        <option value="ملغي">ملغي</option>
+        <option value="مكتمل">مكتمل</option>
+      </select>
+      <div class="modal-buttons">
+        <button onclick="updateAppointmentStatus()"><i class="fa-solid fa-save"></i> حفظ</button>
+        <button onclick="closeStatusModal()" style="background:linear-gradient(90deg,#6c757d,#495057);color:white;"><i class="fa-solid fa-times"></i> إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // بيانات النظام
+    let appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+    let teethData = JSON.parse(localStorage.getItem('teethData') || '{}');
+    let currentEditingAppointment = null;
+    let currentEditingTooth = null;
+    let isDarkMode = localStorage.getItem('darkMode') === 'true';
+    let isArabic = localStorage.getItem('language') !== 'en';
+
+    // تطبيق الوضع المحفوظ
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+      document.getElementById('modeToggle').classList.add('dark');
+      document.getElementById('sunIcon').style.display = 'none';
+      document.getElementById('moonIcon').style.display = 'block';
+    }
+
+    // تطبيق اللغة المحفوظة
+    if (!isArabic) {
+      document.body.setAttribute('lang', 'en');
+      document.body.setAttribute('dir', 'ltr');
+      document.getElementById('languageToggle').textContent = 'العربية';
+    }
+
+    // وظائف النظام الأساسية
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    function saveData() {
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+      localStorage.setItem('teethData', JSON.stringify(teethData));
+    }
+
+    // تسجيل الدخول والخروج
+    document.getElementById('loginBtn').addEventListener('click', function() {
+      showDashboard();
+      showNotification('تم تسجيل الدخول بنجاح');
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', function() {
+      showDashboard();
+      showNotification('تم إنشاء الحساب بنجاح');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      document.getElementById('doctorAuthSection').classList.remove('hidden');
+      document.getElementById('doctorDashboardDiv').classList.add('hidden');
+      showNotification('تم تسجيل الخروج بنجاح');
+    });
+
+    // التنقل بين الصفحات
+    document.getElementById('showRegister').addEventListener('click', function() {
+      document.getElementById('doctorAuthSection').classList.add('hidden');
+      document.getElementById('doctorRegisterDiv').classList.remove('hidden');
+    });
+
+    document.getElementById('showLogin').addEventListener('click', function() {
+      document.getElementById('doctorRegisterDiv').classList.add('hidden');
+      document.getElementById('doctorAuthSection').classList.remove('hidden');
+    });
+
+    function showDashboard() {
+      document.getElementById('doctorAuthSection').classList.add('hidden');
+      document.getElementById('doctorRegisterDiv').classList.add('hidden');
+      document.getElementById('doctorDashboardDiv').classList.remove('hidden');
+      document.getElementById('appointmentFormSection').classList.add('hidden');
+      document.getElementById('appointmentPage').classList.add('hidden');
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('teethChartPage').classList.add('hidden');
+      updateDashboardStats();
+      updateAppointmentReminders();
+    }
+
+    // إدارة الجلسات
+    document.getElementById('openAppointmentFormBtn').addEventListener('click', function() {
+      document.getElementById('appointmentFormSection').classList.remove('hidden');
+      document.getElementById('appointmentPage').classList.add('hidden');
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('teethChartPage').classList.add('hidden');
+    });
+
+    document.getElementById('openAppointmentsListBtn').addEventListener('click', function() {
+      document.getElementById('appointmentFormSection').classList.add('hidden');
+      document.getElementById('appointmentPage').classList.remove('hidden');
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('teethChartPage').classList.add('hidden');
+      displayAppointments();
+    });
+
+    document.getElementById('openTeethChartBtn').addEventListener('click', function() {
+      document.getElementById('appointmentFormSection').classList.add('hidden');
+      document.getElementById('appointmentPage').classList.add('hidden');
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('teethChartPage').classList.remove('hidden');
+      initializeTeethChart();
+    });
+
+    // حفظ الجلسة
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const appointment = {
+        id: Date.now().toString(),
+        name: formData.get('name'),
+        date: formData.get('date'),
+        tooth: formData.get('tooth'),
+        issue: formData.get('issue'),
+        sessionType: formData.get('sessionType'),
+        price: parseFloat(formData.get('price')),
+        currency: formData.get('currencySelect'),
+        duration: parseInt(formData.get('duration')),
+        notes: formData.get('needs') || '',
+        status: 'مؤكد',
+        createdAt: new Date().toISOString()
+      };
+
+      appointments.push(appointment);
+      
+      // تحديث بيانات السن
+      const toothNumber = parseInt(appointment.tooth);
+      if (!teethData[toothNumber]) {
+        teethData[toothNumber] = {};
+      }
+      teethData[toothNumber].issue = appointment.issue;
+      teethData[toothNumber].hasIssue = true;
+      teethData[toothNumber].status = 'cavity';
+
+      saveData();
+      showNotification('تم حفظ الجلسة بنجاح');
+      e.target.reset();
+      displayAppointments();
+      document.getElementById('appointmentPage').classList.remove('hidden');
+      document.getElementById('appointmentFormSection').classList.add('hidden');
+    });
+
+    // عرض الجلسات
+    function displayAppointments() {
+      const container = document.getElementById('appointmentsList');
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      
+      let filteredAppointments = appointments.filter(apt => {
+        const matchesSearch = apt.name.toLowerCase().includes(searchTerm);
+        const matchesStatus = statusFilter === 'الكل' || apt.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      container.innerHTML = filteredAppointments.map(appointment => `
+        <div class="appointment">
+          <strong>${appointment.name}</strong>
+          <span class="status-label status-${appointment.status === 'مؤكد' ? 'confirmed' : appointment.status === 'ملغي' ? 'canceled' : 'completed'}">${appointment.status}</span>
+          <p><i class="fa-solid fa-calendar"></i> ${appointment.date}</p>
+          <p><i class="fa-solid fa-tooth"></i> السن رقم ${appointment.tooth}</p>
+          <p><i class="fa-solid fa-exclamation-triangle"></i> ${appointment.issue}</p>
+          <p><i class="fa-solid fa-stethoscope"></i> ${appointment.sessionType}</p>
+          <p><i class="fa-solid fa-money-bill-wave"></i> ${appointment.price} ${appointment.currency}</p>
+          <p><i class="fa-solid fa-clock"></i> ${appointment.duration} دقيقة</p>
+          ${appointment.notes ? `<p><i class="fa-solid fa-comment-dots"></i> ${appointment.notes}</p>` : ''}
+          <div class="btns">
+            <button onclick="viewAppointmentDetails('${appointment.id}')"><i class="fa-solid fa-eye"></i> عرض</button>
+            <button onclick="openStatusModal('${appointment.id}')"><i class="fa-solid fa-edit"></i> تعديل الحالة</button>
+            <button class="delete-btn" onclick="deleteAppointment('${appointment.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // البحث والفلترة
+    document.getElementById('searchInput').addEventListener('input', displayAppointments);
+    document.getElementById('filterStatus').addEventListener('change', displayAppointments);
+
+    // حذف الجلسة
+    function deleteAppointment(id) {
+      if (confirm('هل أنت متأكد من حذف هذه الجلسة؟')) {
+        appointments = appointments.filter(apt => apt.id !== id);
+        saveData();
+        displayAppointments();
+        showNotification('تم حذف الجلسة بنجاح');
+      }
+    }
+
+    // عرض تفاصيل الجلسة
+    function viewAppointmentDetails(id) {
+      const appointment = appointments.find(apt => apt.id === id);
+      if (!appointment) return;
+
+      document.getElementById('appointmentDetails').innerHTML = `
+        <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 20px; border-radius: 16px; margin: 20px 0;">
+          <h4><i class="fa-solid fa-user"></i> معلومات المريض</h4>
+          <p><strong>الاسم:</strong> ${appointment.name}</p>
+          <p><strong>التاريخ:</strong> ${appointment.date}</p>
+          <p><strong>رقم السن:</strong> ${appointment.tooth}</p>
+          <p><strong>نوع الإصابة:</strong> ${appointment.issue}</p>
+          <p><strong>نوع الجلسة:</strong> ${appointment.sessionType}</p>
+          <p><strong>السعر:</strong> ${appointment.price} ${appointment.currency}</p>
+          <p><strong>المدة:</strong> ${appointment.duration} دقيقة</p>
+          <p><strong>الحالة:</strong> <span class="status-label status-${appointment.status === 'مؤكد' ? 'confirmed' : appointment.status === 'ملغي' ? 'canceled' : 'completed'}">${appointment.status}</span></p>
+          ${appointment.notes ? `<p><strong>الملاحظات:</strong> ${appointment.notes}</p>` : ''}
+        </div>
+      `;
+
+      document.getElementById('appointmentPage').classList.add('hidden');
+      document.getElementById('detailsPage').classList.remove('hidden');
+      initializeTeethChart();
+    }
+
+    // العودة لقائمة الجلسات
+    document.getElementById('backToAppointmentsBtn').addEventListener('click', function() {
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('appointmentPage').classList.remove('hidden');
+    });
+
+    // تصدير CSV
+    document.getElementById('exportBtn').addEventListener('click', function() {
+      const csvContent = [
+        ['اسم المريض', 'التاريخ', 'رقم السن', 'نوع الإصابة', 'نوع الجلسة', 'السعر', 'العملة', 'المدة', 'الحالة', 'الملاحظات'],
+        ...appointments.map(apt => [
+          apt.name, apt.date, apt.tooth, apt.issue, apt.sessionType, 
+          apt.price, apt.currency, apt.duration, apt.status, apt.notes || ''
+        ])
+      ].map(row => row.join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'appointments.csv';
+      link.click();
+      showNotification('تم تصدير البيانات بنجاح');
+    });
+
+    // مخطط الأسنان المحسن
+    function initializeTeethChart() {
+      const upperChart = document.getElementById('upperTeethChart');
+      const lowerChart = document.getElementById('lowerTeethChart');
+      const mainChart = document.getElementById('teethChart');
+
+      // إنشاء الأسنان للفك العلوي (1-16)
+      if (upperChart) {
+        upperChart.innerHTML = '';
+        upperChart.className = 'teeth-chart';
+        upperChart.style.cssText = `
+          display: grid;
+          grid-template-columns: repeat(8, 1fr);
+          gap: 8px;
+          max-width: 500px;
+          margin: 0 auto;
+          padding: 20px;
+          background: linear-gradient(135deg, #f4f8fa 0%, #e8f4f8 100%);
+          border-radius: 22px;
+          box-shadow: 0 4px 20px rgba(0, 180, 216, 0.12);
+        `;
+
+        for (let i = 1; i <= 16; i++) {
+          const tooth = createToothElement(i);
+          upperChart.appendChild(tooth);
+        }
+      }
+
+      // إنشاء الأسنان للفك السفلي (17-32)
+      if (lowerChart) {
+        lowerChart.innerHTML = '';
+        lowerChart.className = 'teeth-chart';
+        lowerChart.style.cssText = `
+          display: grid;
+          grid-template-columns: repeat(8, 1fr);
+          gap: 8px;
+          max-width: 500px;
+          margin: 0 auto;
+          padding: 20px;
+          background: linear-gradient(135deg, #f4f8fa 0%, #e8f4f8 100%);
+          border-radius: 22px;
+          box-shadow: 0 4px 20px rgba(0, 180, 216, 0.12);
+        `;
+
+        for (let i = 17; i <= 32; i++) {
+          const tooth = createToothElement(i);
+          lowerChart.appendChild(tooth);
+        }
+      }
+
+      // المخطط الرئيسي (جميع الأسنان)
+      if (mainChart) {
+        mainChart.innerHTML = '';
+        for (let i = 1; i <= 32; i++) {
+          const tooth = createToothElement(i);
+          mainChart.appendChild(tooth);
+        }
+      }
+
+      updateTeethStats();
+    }
+
+    function createToothElement(number) {
+      const tooth = document.createElement('div');
+      tooth.className = 'tooth';
+      tooth.textContent = number;
+      tooth.setAttribute('data-tooth', number);
+      
+      const toothData = teethData[number] || {};
+      const status = toothData.status || 'healthy';
+      
+      tooth.classList.add(status);
+      
+      if (toothData.customColor) {
+        tooth.style.backgroundColor = toothData.customColor;
+      }
+      
+      if (toothData.hasIssue) {
+        tooth.setAttribute('data-has-issue', 'true');
+      }
+      
+      tooth.addEventListener('click', () => openToothEditModal(number));
+      
+      return tooth;
+    }
+
+    // فتح مودال تعديل السن
+    function openToothEditModal(toothNumber) {
+      currentEditingTooth = toothNumber;
+      const toothData = teethData[toothNumber] || {};
+      
+      document.getElementById('toothNumberTitle').textContent = toothNumber;
+      document.getElementById('toothStatusSelect').value = toothData.status || 'healthy';
+      document.getElementById('toothColorInput').value = toothData.customColor || '#ffffff';
+      document.getElementById('toothIssueInput').value = toothData.issue || '';
+      document.getElementById('toothTreatmentInput').value = toothData.treatment || '';
+      document.getElementById('toothNotesInput').value = toothData.notes || '';
+      document.getElementById('toothPrioritySelect').value = toothData.priority || 'low';
+      
+      document.getElementById('toothEditModal').style.display = 'flex';
+    }
+
+    function closeToothEditModal() {
+      document.getElementById('toothEditModal').style.display = 'none';
+      currentEditingTooth = null;
+    }
+
+    function saveToothStatus() {
+      if (!currentEditingTooth) return;
+      
+      const status = document.getElementById('toothStatusSelect').value;
+      const customColor = document.getElementById('toothColorInput').value;
+      const issue = document.getElementById('toothIssueInput').value;
+      const treatment = document.getElementById('toothTreatmentInput').value;
+      const notes = document.getElementById('toothNotesInput').value;
+      const priority = document.getElementById('toothPrioritySelect').value;
+      
+      if (!teethData[currentEditingTooth]) {
+        teethData[currentEditingTooth] = {};
+      }
+      
+      teethData[currentEditingTooth] = {
+        status: status,
+        customColor: customColor !== '#ffffff' ? customColor : null,
+        issue: issue,
+        treatment: treatment,
+        notes: notes,
+        priority: priority,
+        hasIssue: status !== 'healthy' || issue !== '',
+        lastUpdated: new Date().toISOString()
+      };
+      
+      saveData();
+      initializeTeethChart();
+      closeToothEditModal();
+      showNotification(`تم تحديث بيانات السن رقم ${currentEditingTooth}`);
+    }
+
+    function deleteToothData() {
+      if (!currentEditingTooth) return;
+      
+      if (confirm(`هل أنت متأكد من حذف جميع بيانات السن رقم ${currentEditingTooth}؟`)) {
+        delete teethData[currentEditingTooth];
+        saveData();
+        initializeTeethChart();
+        closeToothEditModal();
+        showNotification(`تم حذف بيانات السن رقم ${currentEditingTooth}`);
+      }
+    }
+
+    // إحصائيات الأسنان
+    function updateTeethStats() {
+      let healthy = 0, treated = 0, cavity = 0, missing = 0;
+      
+      for (let i = 1; i <= 32; i++) {
+        const toothData = teethData[i];
+        if (!toothData || toothData.status === 'healthy') {
+          healthy++;
+        } else if (toothData.status === 'treated') {
+          treated++;
+        } else if (toothData.status === 'cavity') {
+          cavity++;
+        } else if (toothData.status === 'missing') {
+          missing++;
+        }
+      }
+      
+      document.getElementById('healthyCount').textContent = healthy;
+      document.getElementById('treatedCount').textContent = treated;
+      document.getElementById('cavityCount').textContent = cavity;
+      document.getElementById('missingCount').textContent = missing;
+    }
+
+    // تحديث إحصائيات لوحة التحكم
+    function updateDashboardStats() {
+      document.getElementById('totalAppointments').textContent = appointments.length;
+      
+      let healthy = 0, treated = 0, problem = 0;
+      for (let i = 1; i <= 32; i++) {
+        const toothData = teethData[i];
+        if (!toothData || toothData.status === 'healthy') {
+          healthy++;
+        } else if (toothData.status === 'treated') {
+          treated++;
+        } else {
+          problem++;
+        }
+      }
+      
+      document.getElementById('healthyTeeth').textContent = healthy;
+      document.getElementById('treatedTeeth').textContent = treated;
+      document.getElementById('problemTeeth').textContent = problem;
+    }
+
+    // تذكيرات المواعيد
+    function updateAppointmentReminders() {
+      const today = new Date().toISOString().split('T')[0];
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      
+      const todayAppointments = appointments.filter(apt => apt.date === today && apt.status === 'مؤكد');
+      const tomorrowAppointments = appointments.filter(apt => apt.date === tomorrow && apt.status === 'مؤكد');
+      
+      const remindersContainer = document.getElementById('appointmentReminders');
+      remindersContainer.innerHTML = '';
+      
+      if (todayAppointments.length > 0) {
+        remindersContainer.innerHTML += `
+          <div class="appointment-reminder">
+            <i class="fa-solid fa-bell"></i>
+            <span>لديك ${todayAppointments.length} جلسة اليوم</span>
+          </div>
+        `;
+      }
+      
+      if (tomorrowAppointments.length > 0) {
+        remindersContainer.innerHTML += `
+          <div class="appointment-reminder">
+            <i class="fa-solid fa-calendar-day"></i>
+            <span>لديك ${tomorrowAppointments.length} جلسة غداً</span>
+          </div>
+        `;
+      }
+    }
+
+    // مودال تغيير حالة الجلسة
+    function openStatusModal(appointmentId) {
+      currentEditingAppointment = appointmentId;
+      const appointment = appointments.find(apt => apt.id === appointmentId);
+      if (appointment) {
+        document.getElementById('newStatus').value = appointment.status;
+        document.getElementById('statusModal').style.display = 'flex';
+      }
+    }
+
+    function closeStatusModal() {
+      document.getElementById('statusModal').style.display = 'none';
+      currentEditingAppointment = null;
+    }
+
+    function updateAppointmentStatus() {
+      if (!currentEditingAppointment) return;
+      
+      const newStatus = document.getElementById('newStatus').value;
+      const appointmentIndex = appointments.findIndex(apt => apt.id === currentEditingAppointment);
+      
+      if (appointmentIndex !== -1) {
+        appointments[appointmentIndex].status = newStatus;
+        saveData();
+        displayAppointments();
+        closeStatusModal();
+        showNotification('تم تحديث حالة الجلسة بنجاح');
+      }
+    }
+
+    // الوظائف الإضافية
+    function openAppointmentForm() {
+      document.getElementById('appointmentFormSection').classList.remove('hidden');
+      document.getElementById('appointmentPage').classList.add('hidden');
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('teethChartPage').classList.add('hidden');
+    }
+
+    function openTeethChart() {
+      document.getElementById('appointmentFormSection').classList.add('hidden');
+      document.getElementById('appointmentPage').classList.add('hidden');
+      document.getElementById('detailsPage').classList.add('hidden');
+      document.getElementById('teethChartPage').classList.remove('hidden');
+      initializeTeethChart();
+    }
+
+    function generateReport() {
+      const report = {
+        totalAppointments: appointments.length,
+        confirmedAppointments: appointments.filter(apt => apt.status === 'مؤكد').length,
+        completedAppointments: appointments.filter(apt => apt.status === 'مكتمل').length,
+        cancelledAppointments: appointments.filter(apt => apt.status === 'ملغي').length,
+        totalRevenue: appointments.reduce((sum, apt) => sum + apt.price, 0),
+        teethStats: {
+          healthy: Object.keys(teethData).filter(key => !teethData[key] || teethData[key].status === 'healthy').length,
+          treated: Object.keys(teethData).filter(key => teethData[key] && teethData[key].status === 'treated').length,
+          cavity: Object.keys(teethData).filter(key => teethData[key] && teethData[key].status === 'cavity').length,
+          missing: Object.keys(teethData).filter(key => teethData[key] && teethData[key].status === 'missing').length
+        }
+      };
+      
+      const reportContent = `
+تقرير شامل للعيادة
+==================
+
+إحصائيات الجلسات:
+- إجمالي الجلسات: ${report.totalAppointments}
+- الجلسات المؤكدة: ${report.confirmedAppointments}
+- الجلسات المكتملة: ${report.completedAppointments}
+- الجلسات الملغية: ${report.cancelledAppointments}
+- إجمالي الإيرادات: ${report.totalRevenue.toFixed(2)}
+
+إحصائيات الأسنان:
+- أسنان سليمة: ${32 - Object.keys(teethData).length + report.teethStats.healthy}
+- أسنان معالجة: ${report.teethStats.treated}
+- أسنان مصابة: ${report.teethStats.cavity}
+- أسنان مفقودة: ${report.teethStats.missing}
+
+تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}
+      `;
+      
+      const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'clinic-report.txt';
+      link.click();
+      showNotification('تم إنشاء التقرير بنجاح');
+    }
+
+    function backupData() {
+      const backupData = {
+        appointments: appointments,
+        teethData: teethData,
+        backupDate: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'clinic-backup.json';
+      link.click();
+      showNotification('تم إنشاء النسخة الاحتياطية بنجاح');
+    }
+
+    function resetAllTeeth() {
+      if (confirm('هل أنت متأكد من إعادة تعيين جميع بيانات الأسنان؟')) {
+        teethData = {};
+        saveData();
+        initializeTeethChart();
+        showNotification('تم إعادة تعيين جميع بيانات الأسنان');
+      }
+    }
+
+    function printTeethChart() {
+      window.print();
+    }
+
+    function exportTeethData() {
+      const csvContent = [
+        ['رقم السن', 'الحالة', 'الإصابة', 'العلاج', 'الأولوية', 'الملاحظات'],
+        ...Object.keys(teethData).map(toothNumber => {
+          const data = teethData[toothNumber];
+          return [
+            toothNumber,
+            data.status || 'healthy',
+            data.issue || '',
+            data.treatment || '',
+            data.priority || 'low',
+            data.notes || ''
+          ];
+        })
+      ].map(row => row.join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'teeth-data.csv';
+      link.click();
+      showNotification('تم تصدير بيانات الأسنان بنجاح');
+    }
+
+    function shareTeethChart() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'مخطط الأسنان',
+          text: 'مخطط الأسنان من نظام إدارة العيادة',
+          url: window.location.href
+        });
+      } else {
+        // نسخ الرابط للحافظة
+        navigator.clipboard.writeText(window.location.href);
+        showNotification('تم نسخ الرابط للحافظة');
+      }
+    }
+
+    // تبديل الوضع المظلم
+    document.getElementById('modeToggle').addEventListener('click', function() {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark');
+      this.classList.toggle('dark');
+      
+      if (isDarkMode) {
+        document.getElementById('sunIcon').style.display = 'none';
+        document.getElementById('moonIcon').style.display = 'block';
+      } else {
+        document.getElementById('sunIcon').style.display = 'block';
+        document.getElementById('moonIcon').style.display = 'none';
+      }
+      
+      localStorage.setItem('darkMode', isDarkMode);
+    });
+
+    // تبديل اللغة
+    document.getElementById('languageToggle').addEventListener('click', function() {
+      isArabic = !isArabic;
+      if (isArabic) {
+        document.body.setAttribute('lang', 'ar');
+        document.body.setAttribute('dir', 'rtl');
+        this.textContent = 'English';
+        localStorage.setItem('language', 'ar');
+      } else {
+        document.body.setAttribute('lang', 'en');
+        document.body.setAttribute('dir', 'ltr');
+        this.textContent = 'العربية';
+        localStorage.setItem('language', 'en');
+      }
+    });
+
+    // إغلاق المودال عند النقر خارجه
+    window.addEventListener('click', function(event) {
+      const toothModal = document.getElementById('toothEditModal');
+      const statusModal = document.getElementById('statusModal');
+      
+      if (event.target === toothModal) {
+        closeToothEditModal();
+      }
+      if (event.target === statusModal) {
+        closeStatusModal();
+      }
+    });
+
+    // تحديث العرض عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      updateDashboardStats();
+      updateAppointmentReminders();
+    });
+  </script>
+</body>
+</html>
